@@ -50,6 +50,10 @@ ready:
 psql:
     docker exec -it mlsd-postgres psql -U chat -d chat
 
+# open pgweb in browser (browse + query db via web UI)
+pgweb:
+    open http://localhost:8081
+
 # drop into redis-cli connected to local redis
 redis:
     docker exec -it mlsd-redis redis-cli

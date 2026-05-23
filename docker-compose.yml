@@ -27,5 +27,16 @@ services:
       timeout: 3s
       retries: 5
 
+  pgweb:
+    image: sosedoff/pgweb:latest
+    container_name: mlsd-pgweb
+    ports:
+      - "8081:8081"
+    environment:
+      DATABASE_URL: postgres://chat:chat@postgres:5432/chat?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres_data:
