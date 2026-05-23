@@ -65,10 +65,10 @@ Build > read. Touch every layer.
 
 ## Progress
 
-**Current phase:** Phase 0 — bootstrap **DONE**
-**Last completed step:** Step 5 — Redis `ConnectionManager` added, `/ready` pings both pg + redis, 503 if either down, auto-recovers
-**Next step:** Phase 1 Step 1 — users table migration (`sqlx-cli` setup + first SQL migration)
-**Files in flight:** `Cargo.toml`, `shared/`, `server/`, `client/`, `.gitignore`, `docker-compose.yml`, `.env`
+**Current phase:** Phase 1 — identity & auth
+**Last completed step:** Phase 1 Step 1 — `sqlx-cli` installed, `create_users` migration applied (UUID PK, CITEXT username unique, password_hash, created_at); pgweb added to docker-compose on :8081
+**Next step:** Phase 1 Step 2 — `POST /signup` handler: argon2 password hash + UUIDv7 gen + insert row, return 201 + user id
+**Files in flight:** `Cargo.toml`, `shared/`, `server/`, `client/`, `.gitignore`, `docker-compose.yml`, `.env`, `migrations/`, `justfile`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
 - Queue (NATS vs Kafka) — defer to phase 4
@@ -81,3 +81,4 @@ Build > read. Touch every layer.
 - 2026-05-22 — Phase 0 Step 3 done: axum 0.8 server, `/health` returns "ok" (deps: axum 0.8.9, tokio 1.52)
 - 2026-05-23 — Phase 0 Step 4 done: sqlx 0.9 PgPool, `/ready` queries `SELECT 1`, returns 200/503, dotenvy + justfile. Pool auto-reconnects after pg restart.
 - 2026-05-23 — Phase 0 Step 5 done: redis 1.2 ConnectionManager (features: aio, tokio-comp, connection-manager), `/ready` pings pg + redis, verified 200→503→200 on redis stop/start. **Phase 0 complete.**
+- 2026-05-23 — Phase 1 Step 1 done: sqlx-cli installed, `create_users` migration (UUID PK, CITEXT username UNIQUE, password_hash, created_at, idx on created_at DESC, citext extension), reversibility verified. pgweb service added to docker-compose (port 8081, depends_on postgres healthy).

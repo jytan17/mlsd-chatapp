@@ -1,7 +1,14 @@
-use axum::{Router, extract::State, http::StatusCode, routing::get};
+use axum::{
+    Router,
+    extract::State,
+    http::StatusCode,
+    routing::{get, post},
+};
 use redis::aio::ConnectionManager;
 use sqlx::PgPool;
 use std::env;
+
+mod signup;
 
 #[derive(Clone)]
 struct AppState {
@@ -32,6 +39,7 @@ async fn main() {
     let app = Router::new()
         .route("/health", get(health))
         .route("/ready", get(ready))
+        .route("/signup", post(signup::signup))
         .with_state(state);
 
     let addr = "0.0.0.0:3000";
