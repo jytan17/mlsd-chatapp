@@ -43,7 +43,7 @@ Build > read. Touch every layer.
 
 ## Don'ts
 
-- **Never write or edit source code unless user explicitly asks.** User learns by writing it. Discuss, design, pseudocode in chat OK. Docs/configs OK when asked.
+- ~~Never write or edit source code unless user explicitly asks.~~ **Superseded:** user is new to Rust, wants code provided as chunks for reading/learning. AI gives code in chat (or writes files when asked). User does not write Rust from scratch.
 - No premature abstraction.
 - No silent stack choice — surface options.
 - No skipping the "why broken at scale" step before introducing fix.
@@ -56,16 +56,19 @@ Build > read. Touch every layer.
 
 - User asks "next step" → AI gives **one** small bite-sized chunk to implement.
 - Chunk = 15–45 min of work. One concept. Clear done-condition.
-- AI explains **why** + **what to do**. User writes code.
+- **User is new to Rust.** AI provides the actual code each step — user copies, reads, asks questions. Do NOT tell user to "write it yourself". The learning loop is: read code → ask why → understand → next chunk.
+- For each code drop: explain **why** (concept, tradeoffs), then **code**, then **what to watch / try**.
+- **Code chunks = section-level w/ left-margin `*` markers.** Show each logical section (imports, struct, full updated fn) as a self-contained block. Prefix new/changed lines with `* `, unchanged lines with `  ` (two spaces) — uniform across the block. User scans left edge to spot new lines. Strip prefixes before pasting. Never full-file replacements.
+- Anticipate beginner Rust questions (ownership, async, lifetimes, traits) — flag tricky bits inline.
 - After user reports done → update **Progress** section below. Then wait for next ask.
 - New session → AI reads Progress section first. No re-exploring.
 
 ## Progress
 
-**Current phase:** Phase 0 — bootstrap (in progress)
-**Last completed step:** Step 1 — Cargo workspace skeleton (shared/server/client, resolver = "3", builds clean)
-**Next step:** Step 2 — docker-compose for Postgres + Redis (infra ready before any code needs it)
-**Files in flight:** `Cargo.toml`, `shared/`, `server/`, `client/`, `.gitignore`
+**Current phase:** Phase 0 — bootstrap **DONE**
+**Last completed step:** Step 5 — Redis `ConnectionManager` added, `/ready` pings both pg + redis, 503 if either down, auto-recovers
+**Next step:** Phase 1 Step 1 — users table migration (`sqlx-cli` setup + first SQL migration)
+**Files in flight:** `Cargo.toml`, `shared/`, `server/`, `client/`, `.gitignore`, `docker-compose.yml`, `.env`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
 - Queue (NATS vs Kafka) — defer to phase 4
@@ -74,3 +77,7 @@ Build > read. Touch every layer.
 - 2026-05-22 — drafted CLAUDE.md + README.md roadmap (12 phases, 140–225 hrs total)
 - 2026-05-22 — added stretch goals S1–S7 to README (multi-region, E2EE, WebRTC, search, federation, abuse, compliance)
 - 2026-05-22 — Phase 0 Step 1 done: Cargo workspace (shared/server/client) builds green w/ resolver = "3"
+- 2026-05-22 — Phase 0 Step 2 done: docker-compose w/ Postgres 16 + Redis 7, both healthchecks passing
+- 2026-05-22 — Phase 0 Step 3 done: axum 0.8 server, `/health` returns "ok" (deps: axum 0.8.9, tokio 1.52)
+- 2026-05-23 — Phase 0 Step 4 done: sqlx 0.9 PgPool, `/ready` queries `SELECT 1`, returns 200/503, dotenvy + justfile. Pool auto-reconnects after pg restart.
+- 2026-05-23 — Phase 0 Step 5 done: redis 1.2 ConnectionManager (features: aio, tokio-comp, connection-manager), `/ready` pings pg + redis, verified 200→503→200 on redis stop/start. **Phase 0 complete.**
