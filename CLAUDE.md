@@ -66,8 +66,8 @@ Build > read. Touch every layer.
 ## Progress
 
 **Current phase:** Phase 1 — identity & auth
-**Last completed step:** Phase 1 Step 1 — `sqlx-cli` installed, `create_users` migration applied (UUID PK, CITEXT username unique, password_hash, created_at); pgweb added to docker-compose on :8081
-**Next step:** Phase 1 Step 2 — `POST /signup` handler: argon2 password hash + UUIDv7 gen + insert row, return 201 + user id
+**Last completed step:** Phase 1 Step 2 — `POST /signup` handler: argon2id hash + UUIDv7 + insert, 201/409/400; verified citext case-insensitive dup rejection
+**Next step:** Phase 1 Step 3 — `POST /login`: lookup user, verify argon2, issue opaque session token stored in Redis (TTL); return token to client
 **Files in flight:** `Cargo.toml`, `shared/`, `server/`, `client/`, `.gitignore`, `docker-compose.yml`, `.env`, `migrations/`, `justfile`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
@@ -82,3 +82,4 @@ Build > read. Touch every layer.
 - 2026-05-23 — Phase 0 Step 4 done: sqlx 0.9 PgPool, `/ready` queries `SELECT 1`, returns 200/503, dotenvy + justfile. Pool auto-reconnects after pg restart.
 - 2026-05-23 — Phase 0 Step 5 done: redis 1.2 ConnectionManager (features: aio, tokio-comp, connection-manager), `/ready` pings pg + redis, verified 200→503→200 on redis stop/start. **Phase 0 complete.**
 - 2026-05-23 — Phase 1 Step 1 done: sqlx-cli installed, `create_users` migration (UUID PK, CITEXT username UNIQUE, password_hash, created_at, idx on created_at DESC, citext extension), reversibility verified. pgweb service added to docker-compose (port 8081, depends_on postgres healthy).
+- 2026-05-23 — Phase 1 Step 2 done: `POST /signup` (new module `server/src/signup.rs`); argon2id hashing via `Argon2::default()` + `SaltString::generate(&mut OsRng)`, UUIDv7 ids, validation (username 3..32, password ≥8), 201/409 (citext unique violation)/400. Deps added: argon2 0.5, uuid 1.x w/ v7+serde, serde/serde_json, sqlx feature `uuid`, rand_core (unused now, leftover from import experiment).
