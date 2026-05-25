@@ -60,10 +60,11 @@ Backend-only path (skip 10+11): ~100–165 hrs.
 - **Rust:** workspace, features, error types (`thiserror`).
 
 ### Phase 1 — auth + users _(10–15 hrs)_
-- Signup/login. Argon2 hash. JWT.
-- Postgres schema: users, sessions.
-- **Design:** stateless auth vs sessions. Token rotation. Refresh flow.
-- **Rust:** axum extractors, middleware, sqlx.
+- Signup/login. Argon2id hash. Opaque session token in Redis (TTL).
+- Auth extractor: `Authorization: Bearer <token>` → redis lookup → `user_id`.
+- Postgres schema: `users` (pg). Sessions live in redis, not pg.
+- **Design:** stateful vs stateless auth (opaque session vs JWT) — chose stateful for revocability + per-user session control. Constant-time defense vs account enumeration. CITEXT for case-insensitive username uniqueness.
+- **Rust:** axum extractors (`FromRequestParts`), middleware, sqlx, argon2 PHC format.
 
 ### Phase 2 — REST messaging (no realtime) _(10–15 hrs)_
 - Send msg → DB. Poll inbox.
