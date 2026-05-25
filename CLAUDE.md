@@ -61,13 +61,13 @@ Build > read. Touch every layer.
 - **Code chunks = section-level w/ left-margin `*` markers.** Show each logical section (imports, struct, full updated fn) as a self-contained block. Prefix new/changed lines with `* `, unchanged lines with `  ` (two spaces) — uniform across the block. User scans left edge to spot new lines. Strip prefixes before pasting. Never full-file replacements.
 - Anticipate beginner Rust questions (ownership, async, lifetimes, traits) — flag tricky bits inline.
 - After user reports done → update **Progress** section below. Then wait for next ask.
-- New session → AI reads Progress section first. No re-exploring.
+- New session → AI reads Progress section first, then reads **all source files** (`server/src/*.rs`, `shared/src/*.rs`, `client/src/*.rs`), `Cargo.toml`s, `docker-compose.yml`, `migrations/*.sql`, `justfile`. Builds full mental model before answering. No "let me check" mid-conversation.
 
 ## Progress
 
 **Current phase:** Phase 1 — identity & auth
-**Last completed step:** Phase 1 Step 2 — `POST /signup` handler: argon2id hash + UUIDv7 + insert, 201/409/400; verified citext case-insensitive dup rejection
-**Next step:** Phase 1 Step 3 — `POST /login`: lookup user, verify argon2, issue opaque session token stored in Redis (TTL); return token to client
+**Last completed step:** Phase 1 Step 3 — `POST /login`: argon2 verify w/ dummy-hash constant-time defense vs account enumeration, 32-byte URL-safe-base64 session token, stored in redis `session:<token> → user_id` w/ 30d TTL
+**Next step:** Phase 1 Step 4 — auth extractor: parse `Authorization: Bearer <token>`, redis lookup → `AuthUser(Uuid)`, plus protected `GET /me` to prove it works
 **Files in flight:** `Cargo.toml`, `shared/`, `server/`, `client/`, `.gitignore`, `docker-compose.yml`, `.env`, `migrations/`, `justfile`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
@@ -83,3 +83,4 @@ Build > read. Touch every layer.
 - 2026-05-23 — Phase 0 Step 5 done: redis 1.2 ConnectionManager (features: aio, tokio-comp, connection-manager), `/ready` pings pg + redis, verified 200→503→200 on redis stop/start. **Phase 0 complete.**
 - 2026-05-23 — Phase 1 Step 1 done: sqlx-cli installed, `create_users` migration (UUID PK, CITEXT username UNIQUE, password_hash, created_at, idx on created_at DESC, citext extension), reversibility verified. pgweb service added to docker-compose (port 8081, depends_on postgres healthy).
 - 2026-05-23 — Phase 1 Step 2 done: `POST /signup` (new module `server/src/signup.rs`); argon2id hashing via `Argon2::default()` + `SaltString::generate(&mut OsRng)`, UUIDv7 ids, validation (username 3..32, password ≥8), 201/409 (citext unique violation)/400. Deps added: argon2 0.5, uuid 1.x w/ v7+serde, serde/serde_json, sqlx feature `uuid`, rand_core (unused now, leftover from import experiment).
+- 2026-05-24 — Phase 1 Step 3 done: `POST /login` (new module `server/src/login.rs`); argon2 `verify_password` w/ DUMMY_HASH fallback on user-miss (constant-time vs enumeration), 32-byte random → base64url token, redis `SETEX session:<token> <user_id> 2592000`. Deps: base64 0.22, rand 0.10 (pinned w/o specific minor). Tested 200/401/timing-parity.

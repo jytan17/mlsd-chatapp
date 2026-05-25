@@ -8,6 +8,7 @@ use redis::aio::ConnectionManager;
 use sqlx::PgPool;
 use std::env;
 
+mod auth;
 mod login;
 mod signup;
 
@@ -42,6 +43,7 @@ async fn main() {
         .route("/ready", get(ready))
         .route("/signup", post(signup::signup))
         .route("/login", post(login::login))
+        .route("/me", get(auth::me))
         .with_state(state);
 
     let addr = "0.0.0.0:3000";
