@@ -9,6 +9,7 @@ use sqlx::PgPool;
 use std::env;
 
 mod auth;
+mod conversations;
 mod login;
 mod signup;
 
@@ -44,6 +45,10 @@ async fn main() {
         .route("/signup", post(signup::signup))
         .route("/login", post(login::login))
         .route("/me", get(auth::me))
+        .route(
+            "/conversations",
+            post(conversations::create_conversation).get(conversations::list_conversations),
+        )
         .with_state(state);
 
     let addr = "0.0.0.0:3000";
