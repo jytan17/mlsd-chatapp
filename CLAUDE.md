@@ -65,15 +65,16 @@ Build > read. Touch every layer.
 
 ## Progress
 
-**Current phase:** Phase 2 — REST messaging
-**Last completed step:** Phase 2 Step 3 — `GET /conversations` lists my convs w/ `array_agg(member_ids)`, GROUP BY conv id, ORDER BY id DESC LIMIT 100. Single query, JOIN through `conversation_members` twice (cm = me filter, cm2 = all members). `member_ids` includes self by design — caller decides what to hide. Tested as bob → returns DM w/ both uuids.
-**Next step:** Phase 2 Step 4 — `POST /conversations/:id/messages`. Split into 4a (migration adding `idempotency_key` col + unique index on `(sender_id, idempotency_key)`) and 4b (handler w/ membership check + `Idempotency-Key` header support). Chose path `/conversations/:id/messages` (nested REST) + header-based idempotency (Stripe pattern).
-**Files in flight:** `Cargo.toml`, `shared/`, `server/`, `client/`, `.gitignore`, `docker-compose.yml`, `.env`, `migrations/`, `justfile`
+**Current phase:** Phase 0 — bootstrap (reset 2026-07-14)
+**Last completed step:** none — full reset. Prior work archived in git history (last commit before reset: f41ac76).
+**Next step:** Phase 0 Step 1 — Cargo workspace (shared/server/client), resolver = "3", builds green.
+**Files in flight:** none — repo is bare (only `README.md`, `CLAUDE.md`, `.gitignore`, `.claude/`)
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
 - Queue (NATS vs Kafka) — defer to phase 4
 
 **Log:**
+- 2026-07-14 — **full reset.** Nuked src (server/client/shared), migrations, Cargo files, docker-compose, justfile, .env, target, docker volumes (pg+redis). Kept README.md + CLAUDE.md roadmap. Restart from Phase 0 Step 1. Prior HEAD: f41ac76.
 - 2026-05-22 — drafted CLAUDE.md + README.md roadmap (12 phases, 140–225 hrs total)
 - 2026-05-22 — added stretch goals S1–S7 to README (multi-region, E2EE, WebRTC, search, federation, abuse, compliance)
 - 2026-05-22 — Phase 0 Step 1 done: Cargo workspace (shared/server/client) builds green w/ resolver = "3"
