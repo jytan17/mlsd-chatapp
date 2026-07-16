@@ -58,7 +58,7 @@ Build > read. Touch every layer.
 - Chunk = 15–45 min of work. One concept. Clear done-condition.
 - **User is new to Rust.** AI provides the actual code each step — user copies, reads, asks questions. Do NOT tell user to "write it yourself". The learning loop is: read code → ask why → understand → next chunk.
 - For each code drop: explain **why** (concept, tradeoffs), then **code**, then **what to watch / try**.
-- **Code chunks = section-level w/ left-margin `*` markers.** Show each logical section (imports, struct, full updated fn) as a self-contained block. Prefix new/changed lines with `* `, unchanged lines with `  ` (two spaces) — uniform across the block. User scans left edge to spot new lines. Strip prefixes before pasting. Never full-file replacements.
+- **Code chunks = section-level w/ left-margin diff markers.** Show each logical section (imports, struct, full updated fn) as a self-contained block. Prefix: `+ ` added, `- ` removed, `~ ` modified in place, `  ` (two spaces) unchanged. Uniform across block. User scans left edge to spot changes. Strip prefixes before pasting. Never full-file replacements.
 - Anticipate beginner Rust questions (ownership, async, lifetimes, traits) — flag tricky bits inline.
 - After user reports done → update **Progress** section below. Then wait for next ask.
 - New session → AI reads Progress section first, then reads **all source files** (`server/src/*.rs`, `shared/src/*.rs`, `client/src/*.rs`), `Cargo.toml`s, `docker-compose.yml`, `migrations/*.sql`, `justfile`. Builds full mental model before answering. No "let me check" mid-conversation.
@@ -66,14 +66,15 @@ Build > read. Touch every layer.
 ## Progress
 
 **Current phase:** Phase 0 — bootstrap (reset 2026-07-14)
-**Last completed step:** Phase 0 Step 2 — docker-compose (pg16 + redis7) both healthy (2026-07-14).
-**Next step:** Phase 0 Step 3 — axum server w/ `/health` route returning "ok".
+**Last completed step:** Phase 0 Step 3 — axum 0.8 server, `/health` returns "ok" (2026-07-15).
+**Next step:** Phase 0 Step 4 — sqlx PgPool + `/ready` w/ pg check, dotenvy + justfile.
 **Files in flight:** `Cargo.toml`, `{shared,server,client}/Cargo.toml`, `{shared,client}/src/lib.rs`, `server/src/main.rs`, `docker-compose.yml`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
 - Queue (NATS vs Kafka) — defer to phase 4
 
 **Log:**
+- 2026-07-15 — Phase 0 Step 3 done: axum 0.8 server on 0.0.0.0:3000, `/health` returns "ok" (deps: axum 0.8, tokio 1 full).
 - 2026-07-14 — Phase 0 Step 2 done: docker-compose w/ Postgres 16 + Redis 7, both healthchecks passing (named volumes pgdata/redisdata).
 - 2026-07-14 — Phase 0 Step 1 done: Cargo workspace (shared/server/client) builds green w/ resolver = "3", edition = "2024".
 - 2026-07-14 — **full reset.** Nuked src (server/client/shared), migrations, Cargo files, docker-compose, justfile, .env, target, docker volumes (pg+redis). Kept README.md + CLAUDE.md roadmap. Restart from Phase 0 Step 1. Prior HEAD: f41ac76.
