@@ -1,5 +1,5 @@
-   0.075623750s  INFO prepare_target{force=false package_id=server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server) target="server"}: cargo::core::compiler::fingerprint: fingerprint error for server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server)/Check { test: false }/TargetInner { name: "server", doc: true, ..: with_path("/Users/junyongtan/projects/system-design/mlsd-chatapp/server/src/main.rs", Edition2024) }
-   0.075641916s  INFO prepare_target{force=false package_id=server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server) target="server"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/server-e34a2e569e29ae86/bin-server`
+   0.068889833s  INFO prepare_target{force=false package_id=server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server) target="server"}: cargo::core::compiler::fingerprint: fingerprint error for server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server)/Check { test: false }/TargetInner { name: "server", doc: true, ..: with_path("/Users/junyongtan/projects/system-design/mlsd-chatapp/server/src/main.rs", Edition2024) }
+   0.068908042s  INFO prepare_target{force=false package_id=server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server) target="server"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/server-e34a2e569e29ae86/bin-server`
 
 Caused by:
     No such file or directory (os error 2)
@@ -22,8 +22,8 @@ Stack backtrace:
   14: std::rt::lang_start::<()>::{closure#0}
   15: std::rt::lang_start_internal
   16: _main
-   0.078772125s  INFO prepare_target{force=false package_id=axum v0.8.9 target="axum"}: cargo::core::compiler::fingerprint: fingerprint error for axum v0.8.9/Check { test: false }/TargetInner { ..: lib_target("axum", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.8.9/src/lib.rs", Edition2021) }
-   0.078782833s  INFO prepare_target{force=false package_id=axum v0.8.9 target="axum"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/axum-6cced85ebb044c6d/lib-axum`
+   0.071658083s  INFO prepare_target{force=false package_id=axum v0.8.9 target="axum"}: cargo::core::compiler::fingerprint: fingerprint error for axum v0.8.9/Check { test: false }/TargetInner { ..: lib_target("axum", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.8.9/src/lib.rs", Edition2021) }
+   0.071670667s  INFO prepare_target{force=false package_id=axum v0.8.9 target="axum"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/axum-6cced85ebb044c6d/lib-axum`
 
 Caused by:
     No such file or directory (os error 2)
@@ -47,8 +47,8 @@ Stack backtrace:
   15: std::rt::lang_start::<()>::{closure#0}
   16: std::rt::lang_start_internal
   17: _main
-   0.079457666s  INFO prepare_target{force=false package_id=axum-core v0.5.6 target="axum_core"}: cargo::core::compiler::fingerprint: fingerprint error for axum-core v0.5.6/Check { test: false }/TargetInner { ..: lib_target("axum_core", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-core-0.5.6/src/lib.rs", Edition2021) }
-   0.079465750s  INFO prepare_target{force=false package_id=axum-core v0.5.6 target="axum_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/axum-core-ea62bb431f8e226b/lib-axum_core`
+   0.072295708s  INFO prepare_target{force=false package_id=axum-core v0.5.6 target="axum_core"}: cargo::core::compiler::fingerprint: fingerprint error for axum-core v0.5.6/Check { test: false }/TargetInner { ..: lib_target("axum_core", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-core-0.5.6/src/lib.rs", Edition2021) }
+   0.072301792s  INFO prepare_target{force=false package_id=axum-core v0.5.6 target="axum_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/axum-core-ea62bb431f8e226b/lib-axum_core`
 
 Caused by:
     No such file or directory (os error 2)
@@ -73,8 +73,8 @@ Stack backtrace:
   16: std::rt::lang_start::<()>::{closure#0}
   17: std::rt::lang_start_internal
   18: _main
-   0.080551958s  INFO prepare_target{force=false package_id=futures-util v0.3.32 target="futures_util"}: cargo::core::compiler::fingerprint: fingerprint error for futures-util v0.3.32/Check { test: false }/TargetInner { ..: lib_target("futures_util", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-util-0.3.32/src/lib.rs", Edition2018) }
-   0.080559500s  INFO prepare_target{force=false package_id=futures-util v0.3.32 target="futures_util"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/futures-util-78a9e573f70f3479/lib-futures_util`
+   0.073404500s  INFO prepare_target{force=false package_id=hyper v1.10.1 target="hyper"}: cargo::core::compiler::fingerprint: fingerprint error for hyper v1.10.1/Check { test: false }/TargetInner { ..: lib_target("hyper", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-1.10.1/src/lib.rs", Edition2021) }
+   0.073410000s  INFO prepare_target{force=false package_id=hyper v1.10.1 target="hyper"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/hyper-4074e99159b9f3f9/lib-hyper`
 
 Caused by:
     No such file or directory (os error 2)
@@ -99,34 +99,8 @@ Stack backtrace:
   16: std::rt::lang_start::<()>::{closure#0}
   17: std::rt::lang_start_internal
   18: _main
-   0.080863000s  INFO prepare_target{force=false package_id=hyper v1.10.1 target="hyper"}: cargo::core::compiler::fingerprint: fingerprint error for hyper v1.10.1/Check { test: false }/TargetInner { ..: lib_target("hyper", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-1.10.1/src/lib.rs", Edition2021) }
-   0.080868541s  INFO prepare_target{force=false package_id=hyper v1.10.1 target="hyper"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/hyper-4074e99159b9f3f9/lib-hyper`
-
-Caused by:
-    No such file or directory (os error 2)
-
-Stack backtrace:
-   0: std::backtrace::Backtrace::create
-   1: cargo_util::paths::read_bytes
-   2: cargo_util::paths::read
-   3: cargo::core::compiler::fingerprint::_compare_old_fingerprint
-   4: cargo::core::compiler::fingerprint::prepare_target
-   5: cargo::core::compiler::compile
-   6: cargo::core::compiler::compile
-   7: cargo::core::compiler::compile
-   8: <cargo::core::compiler::build_runner::BuildRunner>::compile
-   9: cargo::ops::cargo_compile::compile_ws
-  10: cargo::ops::cargo_compile::compile_with_exec
-  11: cargo::ops::cargo_compile::compile
-  12: cargo::commands::check::exec
-  13: <cargo::cli::Exec>::exec
-  14: cargo::main
-  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
-  16: std::rt::lang_start::<()>::{closure#0}
-  17: std::rt::lang_start_internal
-  18: _main
-   0.081347583s  INFO prepare_target{force=false package_id=httparse v1.10.1 target="httparse"}: cargo::core::compiler::fingerprint: fingerprint error for httparse v1.10.1/Check { test: false }/TargetInner { benched: false, ..: lib_target("httparse", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/httparse-1.10.1/src/lib.rs", Edition2018) }
-   0.081354083s  INFO prepare_target{force=false package_id=httparse v1.10.1 target="httparse"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/httparse-dbf25b3d6de1534d/lib-httparse`
+   0.074107250s  INFO prepare_target{force=false package_id=tokio v1.52.3 target="tokio"}: cargo::core::compiler::fingerprint: fingerprint error for tokio v1.52.3/Check { test: false }/TargetInner { ..: lib_target("tokio", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.52.3/src/lib.rs", Edition2021) }
+   0.074117208s  INFO prepare_target{force=false package_id=tokio v1.52.3 target="tokio"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/tokio-f1931d57f9b1ef84/lib-tokio`
 
 Caused by:
     No such file or directory (os error 2)
@@ -152,35 +126,8 @@ Stack backtrace:
   17: std::rt::lang_start::<()>::{closure#0}
   18: std::rt::lang_start_internal
   19: _main
-   0.081805250s  INFO prepare_target{force=false package_id=tokio v1.52.3 target="tokio"}: cargo::core::compiler::fingerprint: fingerprint error for tokio v1.52.3/Check { test: false }/TargetInner { ..: lib_target("tokio", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.52.3/src/lib.rs", Edition2021) }
-   0.081818291s  INFO prepare_target{force=false package_id=tokio v1.52.3 target="tokio"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/tokio-f1931d57f9b1ef84/lib-tokio`
-
-Caused by:
-    No such file or directory (os error 2)
-
-Stack backtrace:
-   0: std::backtrace::Backtrace::create
-   1: cargo_util::paths::read_bytes
-   2: cargo_util::paths::read
-   3: cargo::core::compiler::fingerprint::_compare_old_fingerprint
-   4: cargo::core::compiler::fingerprint::prepare_target
-   5: cargo::core::compiler::compile
-   6: cargo::core::compiler::compile
-   7: cargo::core::compiler::compile
-   8: cargo::core::compiler::compile
-   9: <cargo::core::compiler::build_runner::BuildRunner>::compile
-  10: cargo::ops::cargo_compile::compile_ws
-  11: cargo::ops::cargo_compile::compile_with_exec
-  12: cargo::ops::cargo_compile::compile
-  13: cargo::commands::check::exec
-  14: <cargo::cli::Exec>::exec
-  15: cargo::main
-  16: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
-  17: std::rt::lang_start::<()>::{closure#0}
-  18: std::rt::lang_start_internal
-  19: _main
-   0.083087250s  INFO prepare_target{force=false package_id=tokio-macros v2.7.0 target="tokio_macros"}: cargo::core::compiler::fingerprint: fingerprint error for tokio-macros v2.7.0/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("tokio_macros", ["proc-macro"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-macros-2.7.0/src/lib.rs", Edition2021) }
-   0.083095291s  INFO prepare_target{force=false package_id=tokio-macros v2.7.0 target="tokio_macros"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/tokio-macros-32c77350dbdaafef/lib-tokio_macros`
+   0.075097792s  INFO prepare_target{force=false package_id=tokio-macros v2.7.0 target="tokio_macros"}: cargo::core::compiler::fingerprint: fingerprint error for tokio-macros v2.7.0/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("tokio_macros", ["proc-macro"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-macros-2.7.0/src/lib.rs", Edition2021) }
+   0.075105917s  INFO prepare_target{force=false package_id=tokio-macros v2.7.0 target="tokio_macros"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/tokio-macros-32c77350dbdaafef/lib-tokio_macros`
 
 Caused by:
     No such file or directory (os error 2)
@@ -207,8 +154,8 @@ Stack backtrace:
   18: std::rt::lang_start::<()>::{closure#0}
   19: std::rt::lang_start_internal
   20: _main
-   0.083611250s  INFO prepare_target{force=false package_id=quote v1.0.46 target="quote"}: cargo::core::compiler::fingerprint: fingerprint error for quote v1.0.46/Build/TargetInner { ..: lib_target("quote", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/quote-1.0.46/src/lib.rs", Edition2021) }
-   0.083619833s  INFO prepare_target{force=false package_id=quote v1.0.46 target="quote"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/quote-6df09a479b97a331/lib-quote`
+   0.075692875s  INFO prepare_target{force=false package_id=syn v2.0.119 target="syn"}: cargo::core::compiler::fingerprint: fingerprint error for syn v2.0.119/Build/TargetInner { ..: lib_target("syn", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/syn-2.0.119/src/lib.rs", Edition2021) }
+   0.075698500s  INFO prepare_target{force=false package_id=syn v2.0.119 target="syn"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/syn-e00bdaaed70b2720/lib-syn`
 
 Caused by:
     No such file or directory (os error 2)
@@ -236,37 +183,8 @@ Stack backtrace:
   19: std::rt::lang_start::<()>::{closure#0}
   20: std::rt::lang_start_internal
   21: _main
-   0.083906708s  INFO prepare_target{force=false package_id=syn v2.0.119 target="syn"}: cargo::core::compiler::fingerprint: fingerprint error for syn v2.0.119/Build/TargetInner { ..: lib_target("syn", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/syn-2.0.119/src/lib.rs", Edition2021) }
-   0.083912791s  INFO prepare_target{force=false package_id=syn v2.0.119 target="syn"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/syn-e00bdaaed70b2720/lib-syn`
-
-Caused by:
-    No such file or directory (os error 2)
-
-Stack backtrace:
-   0: std::backtrace::Backtrace::create
-   1: cargo_util::paths::read_bytes
-   2: cargo_util::paths::read
-   3: cargo::core::compiler::fingerprint::_compare_old_fingerprint
-   4: cargo::core::compiler::fingerprint::prepare_target
-   5: cargo::core::compiler::compile
-   6: cargo::core::compiler::compile
-   7: cargo::core::compiler::compile
-   8: cargo::core::compiler::compile
-   9: cargo::core::compiler::compile
-  10: cargo::core::compiler::compile
-  11: <cargo::core::compiler::build_runner::BuildRunner>::compile
-  12: cargo::ops::cargo_compile::compile_ws
-  13: cargo::ops::cargo_compile::compile_with_exec
-  14: cargo::ops::cargo_compile::compile
-  15: cargo::commands::check::exec
-  16: <cargo::cli::Exec>::exec
-  17: cargo::main
-  18: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
-  19: std::rt::lang_start::<()>::{closure#0}
-  20: std::rt::lang_start_internal
-  21: _main
-   0.084128291s  INFO prepare_target{force=false package_id=hyper-util v0.1.20 target="hyper_util"}: cargo::core::compiler::fingerprint: fingerprint error for hyper-util v0.1.20/Check { test: false }/TargetInner { ..: lib_target("hyper_util", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-util-0.1.20/src/lib.rs", Edition2021) }
-   0.084133791s  INFO prepare_target{force=false package_id=hyper-util v0.1.20 target="hyper_util"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/hyper-util-e2b16d4951584dbe/lib-hyper_util`
+   0.075886708s  INFO prepare_target{force=false package_id=hyper-util v0.1.20 target="hyper_util"}: cargo::core::compiler::fingerprint: fingerprint error for hyper-util v0.1.20/Check { test: false }/TargetInner { ..: lib_target("hyper_util", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-util-0.1.20/src/lib.rs", Edition2021) }
+   0.075892083s  INFO prepare_target{force=false package_id=hyper-util v0.1.20 target="hyper_util"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/hyper-util-e2b16d4951584dbe/lib-hyper_util`
 
 Caused by:
     No such file or directory (os error 2)
@@ -291,8 +209,8 @@ Stack backtrace:
   16: std::rt::lang_start::<()>::{closure#0}
   17: std::rt::lang_start_internal
   18: _main
-   0.084426416s  INFO prepare_target{force=false package_id=matchit v0.8.4 target="matchit"}: cargo::core::compiler::fingerprint: fingerprint error for matchit v0.8.4/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("matchit", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/matchit-0.8.4/src/lib.rs", Edition2021) }
-   0.084431750s  INFO prepare_target{force=false package_id=matchit v0.8.4 target="matchit"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/matchit-a415423a5becd4ad/lib-matchit`
+   0.076227292s  INFO prepare_target{force=false package_id=serde_core v1.0.228 target="serde_core"}: cargo::core::compiler::fingerprint: fingerprint error for serde_core v1.0.228/Check { test: false }/TargetInner { ..: lib_target("serde_core", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_core-1.0.228/src/lib.rs", Edition2021) }
+   0.076235708s  INFO prepare_target{force=false package_id=serde_core v1.0.228 target="serde_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/serde_core-593f69c3229a2fd6/lib-serde_core`
 
 Caused by:
     No such file or directory (os error 2)
@@ -317,8 +235,8 @@ Stack backtrace:
   16: std::rt::lang_start::<()>::{closure#0}
   17: std::rt::lang_start_internal
   18: _main
-   0.084560625s  INFO prepare_target{force=false package_id=memchr v2.8.3 target="memchr"}: cargo::core::compiler::fingerprint: fingerprint error for memchr v2.8.3/Check { test: false }/TargetInner { benched: false, ..: lib_target("memchr", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/memchr-2.8.3/src/lib.rs", Edition2021) }
-   0.084576333s  INFO prepare_target{force=false package_id=memchr v2.8.3 target="memchr"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/memchr-59c827377f99624c/lib-memchr`
+   0.076474958s  INFO prepare_target{force=false package_id=serde_json v1.0.150 target="serde_json"}: cargo::core::compiler::fingerprint: fingerprint error for serde_json v1.0.150/Check { test: false }/TargetInner { ..: lib_target("serde_json", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.150/src/lib.rs", Edition2021) }
+   0.076483625s  INFO prepare_target{force=false package_id=serde_json v1.0.150 target="serde_json"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/serde_json-7560691684598f7a/lib-serde_json`
 
 Caused by:
     No such file or directory (os error 2)
@@ -343,8 +261,8 @@ Stack backtrace:
   16: std::rt::lang_start::<()>::{closure#0}
   17: std::rt::lang_start_internal
   18: _main
-   0.084786333s  INFO prepare_target{force=false package_id=serde_core v1.0.228 target="serde_core"}: cargo::core::compiler::fingerprint: fingerprint error for serde_core v1.0.228/Check { test: false }/TargetInner { ..: lib_target("serde_core", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_core-1.0.228/src/lib.rs", Edition2021) }
-   0.084790916s  INFO prepare_target{force=false package_id=serde_core v1.0.228 target="serde_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/serde_core-593f69c3229a2fd6/lib-serde_core`
+   0.076953000s  INFO prepare_target{force=false package_id=serde_path_to_error v0.1.20 target="serde_path_to_error"}: cargo::core::compiler::fingerprint: fingerprint error for serde_path_to_error v0.1.20/Check { test: false }/TargetInner { ..: lib_target("serde_path_to_error", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_path_to_error-0.1.20/src/lib.rs", Edition2021) }
+   0.076962375s  INFO prepare_target{force=false package_id=serde_path_to_error v0.1.20 target="serde_path_to_error"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/serde_path_to_error-0e4012e1193590b4/lib-serde_path_to_error`
 
 Caused by:
     No such file or directory (os error 2)
@@ -369,8 +287,8 @@ Stack backtrace:
   16: std::rt::lang_start::<()>::{closure#0}
   17: std::rt::lang_start_internal
   18: _main
-   0.085450541s  INFO prepare_target{force=false package_id=serde_json v1.0.150 target="serde_json"}: cargo::core::compiler::fingerprint: fingerprint error for serde_json v1.0.150/Check { test: false }/TargetInner { ..: lib_target("serde_json", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.150/src/lib.rs", Edition2021) }
-   0.085458000s  INFO prepare_target{force=false package_id=serde_json v1.0.150 target="serde_json"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/serde_json-7560691684598f7a/lib-serde_json`
+   0.077099667s  INFO prepare_target{force=false package_id=serde_urlencoded v0.7.1 target="serde_urlencoded"}: cargo::core::compiler::fingerprint: fingerprint error for serde_urlencoded v0.7.1/Check { test: false }/TargetInner { name_inferred: true, tested: false, ..: lib_target("serde_urlencoded", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_urlencoded-0.7.1/src/lib.rs", Edition2018) }
+   0.077105125s  INFO prepare_target{force=false package_id=serde_urlencoded v0.7.1 target="serde_urlencoded"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/serde_urlencoded-50fa18c3c79db3fe/lib-serde_urlencoded`
 
 Caused by:
     No such file or directory (os error 2)
@@ -395,60 +313,8 @@ Stack backtrace:
   16: std::rt::lang_start::<()>::{closure#0}
   17: std::rt::lang_start_internal
   18: _main
-   0.086052708s  INFO prepare_target{force=false package_id=serde_path_to_error v0.1.20 target="serde_path_to_error"}: cargo::core::compiler::fingerprint: fingerprint error for serde_path_to_error v0.1.20/Check { test: false }/TargetInner { ..: lib_target("serde_path_to_error", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_path_to_error-0.1.20/src/lib.rs", Edition2021) }
-   0.086060208s  INFO prepare_target{force=false package_id=serde_path_to_error v0.1.20 target="serde_path_to_error"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/serde_path_to_error-0e4012e1193590b4/lib-serde_path_to_error`
-
-Caused by:
-    No such file or directory (os error 2)
-
-Stack backtrace:
-   0: std::backtrace::Backtrace::create
-   1: cargo_util::paths::read_bytes
-   2: cargo_util::paths::read
-   3: cargo::core::compiler::fingerprint::_compare_old_fingerprint
-   4: cargo::core::compiler::fingerprint::prepare_target
-   5: cargo::core::compiler::compile
-   6: cargo::core::compiler::compile
-   7: cargo::core::compiler::compile
-   8: <cargo::core::compiler::build_runner::BuildRunner>::compile
-   9: cargo::ops::cargo_compile::compile_ws
-  10: cargo::ops::cargo_compile::compile_with_exec
-  11: cargo::ops::cargo_compile::compile
-  12: cargo::commands::check::exec
-  13: <cargo::cli::Exec>::exec
-  14: cargo::main
-  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
-  16: std::rt::lang_start::<()>::{closure#0}
-  17: std::rt::lang_start_internal
-  18: _main
-   0.086215291s  INFO prepare_target{force=false package_id=serde_urlencoded v0.7.1 target="serde_urlencoded"}: cargo::core::compiler::fingerprint: fingerprint error for serde_urlencoded v0.7.1/Check { test: false }/TargetInner { name_inferred: true, tested: false, ..: lib_target("serde_urlencoded", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_urlencoded-0.7.1/src/lib.rs", Edition2018) }
-   0.086221625s  INFO prepare_target{force=false package_id=serde_urlencoded v0.7.1 target="serde_urlencoded"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/serde_urlencoded-50fa18c3c79db3fe/lib-serde_urlencoded`
-
-Caused by:
-    No such file or directory (os error 2)
-
-Stack backtrace:
-   0: std::backtrace::Backtrace::create
-   1: cargo_util::paths::read_bytes
-   2: cargo_util::paths::read
-   3: cargo::core::compiler::fingerprint::_compare_old_fingerprint
-   4: cargo::core::compiler::fingerprint::prepare_target
-   5: cargo::core::compiler::compile
-   6: cargo::core::compiler::compile
-   7: cargo::core::compiler::compile
-   8: <cargo::core::compiler::build_runner::BuildRunner>::compile
-   9: cargo::ops::cargo_compile::compile_ws
-  10: cargo::ops::cargo_compile::compile_with_exec
-  11: cargo::ops::cargo_compile::compile
-  12: cargo::commands::check::exec
-  13: <cargo::cli::Exec>::exec
-  14: cargo::main
-  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
-  16: std::rt::lang_start::<()>::{closure#0}
-  17: std::rt::lang_start_internal
-  18: _main
-   0.086549791s  INFO prepare_target{force=false package_id=serde v1.0.228 target="serde"}: cargo::core::compiler::fingerprint: fingerprint error for serde v1.0.228/Check { test: false }/TargetInner { ..: lib_target("serde", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs", Edition2021) }
-   0.086560208s  INFO prepare_target{force=false package_id=serde v1.0.228 target="serde"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/serde-2396ecbd9e1c2eda/lib-serde`
+   0.077320333s  INFO prepare_target{force=false package_id=serde v1.0.228 target="serde"}: cargo::core::compiler::fingerprint: fingerprint error for serde v1.0.228/Check { test: false }/TargetInner { ..: lib_target("serde", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs", Edition2021) }
+   0.077327250s  INFO prepare_target{force=false package_id=serde v1.0.228 target="serde"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/serde-2396ecbd9e1c2eda/lib-serde`
 
 Caused by:
     No such file or directory (os error 2)
@@ -474,8 +340,8 @@ Stack backtrace:
   17: std::rt::lang_start::<()>::{closure#0}
   18: std::rt::lang_start_internal
   19: _main
-   0.087032958s  INFO prepare_target{force=false package_id=tower v0.5.3 target="tower"}: cargo::core::compiler::fingerprint: fingerprint error for tower v0.5.3/Check { test: false }/TargetInner { ..: lib_target("tower", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-0.5.3/src/lib.rs", Edition2018) }
-   0.087039750s  INFO prepare_target{force=false package_id=tower v0.5.3 target="tower"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/tower-2b84a5807ee0061a/lib-tower`
+   0.077576792s  INFO prepare_target{force=false package_id=tower v0.5.3 target="tower"}: cargo::core::compiler::fingerprint: fingerprint error for tower v0.5.3/Check { test: false }/TargetInner { ..: lib_target("tower", ["lib"], "/Users/junyongtan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-0.5.3/src/lib.rs", Edition2018) }
+   0.077584875s  INFO prepare_target{force=false package_id=tower v0.5.3 target="tower"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/tower-2b84a5807ee0061a/lib-tower`
 
 Caused by:
     No such file or directory (os error 2)
@@ -500,8 +366,8 @@ Stack backtrace:
   16: std::rt::lang_start::<()>::{closure#0}
   17: std::rt::lang_start_internal
   18: _main
-   0.087412125s  INFO prepare_target{force=false package_id=server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server) target="server"}: cargo::core::compiler::fingerprint: fingerprint error for server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server)/Check { test: true }/TargetInner { name: "server", doc: true, ..: with_path("/Users/junyongtan/projects/system-design/mlsd-chatapp/server/src/main.rs", Edition2024) }
-   0.087448375s  INFO prepare_target{force=false package_id=server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server) target="server"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/server-d73005f03ec9adec/test-bin-server`
+   0.077896625s  INFO prepare_target{force=false package_id=server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server) target="server"}: cargo::core::compiler::fingerprint: fingerprint error for server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server)/Check { test: true }/TargetInner { name: "server", doc: true, ..: with_path("/Users/junyongtan/projects/system-design/mlsd-chatapp/server/src/main.rs", Edition2024) }
+   0.077902958s  INFO prepare_target{force=false package_id=server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server) target="server"}: cargo::core::compiler::fingerprint:     err: failed to read `/Users/junyongtan/projects/system-design/mlsd-chatapp/target/debug/.fingerprint/server-d73005f03ec9adec/test-bin-server`
 
 Caused by:
     No such file or directory (os error 2)
@@ -524,14 +390,9 @@ Stack backtrace:
   14: std::rt::lang_start::<()>::{closure#0}
   15: std::rt::lang_start_internal
   16: _main
-   Compiling quote v1.0.46
-    Checking serde_core v1.0.228
-    Checking httparse v1.10.1
-    Checking futures-util v0.3.32
-    Checking memchr v2.8.3
-    Checking matchit v0.8.4
-    Checking axum-core v0.5.6
    Compiling syn v2.0.119
+    Checking serde_core v1.0.228
+    Checking axum-core v0.5.6
     Checking serde v1.0.228
     Checking serde_json v1.0.150
     Checking serde_path_to_error v0.1.20
@@ -543,4 +404,4 @@ Stack backtrace:
     Checking hyper-util v0.1.20
     Checking axum v0.8.9
     Checking server v0.1.0 (/Users/junyongtan/projects/system-design/mlsd-chatapp/server)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.31s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.01s
