@@ -66,14 +66,15 @@ Build > read. Touch every layer.
 ## Progress
 
 **Current phase:** Phase 0 — bootstrap (reset 2026-07-14)
-**Last completed step:** Phase 0 Step 1 — Cargo workspace green (2026-07-14).
-**Next step:** Phase 0 Step 2 — docker-compose w/ Postgres 16 + Redis 7, healthchecks passing.
-**Files in flight:** `Cargo.toml`, `{shared,server,client}/Cargo.toml`, `{shared,client}/src/lib.rs`, `server/src/main.rs`
+**Last completed step:** Phase 0 Step 2 — docker-compose (pg16 + redis7) both healthy (2026-07-14).
+**Next step:** Phase 0 Step 3 — axum server w/ `/health` route returning "ok".
+**Files in flight:** `Cargo.toml`, `{shared,server,client}/Cargo.toml`, `{shared,client}/src/lib.rs`, `server/src/main.rs`, `docker-compose.yml`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
 - Queue (NATS vs Kafka) — defer to phase 4
 
 **Log:**
+- 2026-07-14 — Phase 0 Step 2 done: docker-compose w/ Postgres 16 + Redis 7, both healthchecks passing (named volumes pgdata/redisdata).
 - 2026-07-14 — Phase 0 Step 1 done: Cargo workspace (shared/server/client) builds green w/ resolver = "3", edition = "2024".
 - 2026-07-14 — **full reset.** Nuked src (server/client/shared), migrations, Cargo files, docker-compose, justfile, .env, target, docker volumes (pg+redis). Kept README.md + CLAUDE.md roadmap. Restart from Phase 0 Step 1. Prior HEAD: f41ac76.
 - 2026-05-22 — drafted CLAUDE.md + README.md roadmap (12 phases, 140–225 hrs total)
