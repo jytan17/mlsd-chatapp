@@ -66,14 +66,15 @@ Build > read. Touch every layer.
 ## Progress
 
 **Current phase:** Phase 0 — bootstrap (reset 2026-07-14)
-**Last completed step:** Phase 0 Step 3 — axum 0.8 server, `/health` returns "ok" (2026-07-15).
-**Next step:** Phase 0 Step 4 — sqlx PgPool + `/ready` w/ pg check, dotenvy + justfile.
-**Files in flight:** `Cargo.toml`, `{shared,server,client}/Cargo.toml`, `{shared,client}/src/lib.rs`, `server/src/main.rs`, `docker-compose.yml`
+**Last completed step:** Phase 0 Step 4 — sqlx PgPool + `/ready` w/ pg check, dotenvy + justfile (2026-07-16).
+**Next step:** Phase 0 Step 5 — redis ConnectionManager in AppState, `/ready` pings both pg + redis.
+**Files in flight:** `Cargo.toml`, `{shared,server,client}/Cargo.toml`, `{shared,client}/src/lib.rs`, `server/src/main.rs`, `docker-compose.yml`, `.env`, `justfile`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
 - Queue (NATS vs Kafka) — defer to phase 4
 
 **Log:**
+- 2026-07-16 — Phase 0 Step 4 done: sqlx 0.8 PgPool w/ `PgPoolOptions::acquire_timeout(2s)`, `/ready` runs `SELECT 1` → 200/503, dotenvy loads `.env` (`DATABASE_URL`), justfile w/ run/db-up/db-down. Pool auto-recovers after pg pause/unpause. Fast-fail readiness (no 30s default hang).
 - 2026-07-15 — Phase 0 Step 3 done: axum 0.8 server on 0.0.0.0:3000, `/health` returns "ok" (deps: axum 0.8, tokio 1 full).
 - 2026-07-14 — Phase 0 Step 2 done: docker-compose w/ Postgres 16 + Redis 7, both healthchecks passing (named volumes pgdata/redisdata).
 - 2026-07-14 — Phase 0 Step 1 done: Cargo workspace (shared/server/client) builds green w/ resolver = "3", edition = "2024".
