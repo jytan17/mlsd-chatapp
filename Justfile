@@ -6,3 +6,9 @@ db-up:
 
 db-down:
     docker compose down
+
+migrate:
+    sqlx migrate run
+
+migrate-revert:
+    sqlx migrate revert
