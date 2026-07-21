@@ -65,15 +65,17 @@ Build > read. Touch every layer.
 
 ## Progress
 
-**Current phase:** Phase 0 — bootstrap (reset 2026-07-14)
-**Last completed step:** Phase 0 Step 4 — sqlx PgPool + `/ready` w/ pg check, dotenvy + justfile (2026-07-16).
-**Next step:** Phase 0 Step 5 — redis ConnectionManager in AppState, `/ready` pings both pg + redis.
+**Current phase:** Phase 1 — auth
+**Last completed step:** Phase 1 Step 1 — users table migration (2026-07-20).
+**Next step:** Phase 1 Step 2 — `POST /signup` w/ argon2id hash, UUIDv7 id, 201/409/400.
 **Files in flight:** `Cargo.toml`, `{shared,server,client}/Cargo.toml`, `{shared,client}/src/lib.rs`, `server/src/main.rs`, `docker-compose.yml`, `.env`, `justfile`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
 - Queue (NATS vs Kafka) — defer to phase 4
 
 **Log:**
+- 2026-07-20 — Phase 0 Step 5 done: redis 0.27 ConnectionManager w/ `ConnectionManagerConfig::set_connection_timeout(2s) + set_response_timeout(2s)`, `/ready` pings both pg + redis (`redis::cmd("PING").query_async::<String>` == "PONG"), 200/503 matrix verified. **Phase 0 complete.**
+- 2026-07-20 — Phase 1 Step 1 done: `create_users` migration — UUID pk, CITEXT username UNIQUE, password_hash TEXT NOT NULL, created_at TIMESTAMPTZ default now(), idx on created_at DESC, citext extension. Reversible (up/down). Added `migrate` + `migrate-revert` to justfile.
 - 2026-07-16 — Phase 0 Step 4 done: sqlx 0.8 PgPool w/ `PgPoolOptions::acquire_timeout(2s)`, `/ready` runs `SELECT 1` → 200/503, dotenvy loads `.env` (`DATABASE_URL`), justfile w/ run/db-up/db-down. Pool auto-recovers after pg pause/unpause. Fast-fail readiness (no 30s default hang).
 - 2026-07-15 — Phase 0 Step 3 done: axum 0.8 server on 0.0.0.0:3000, `/health` returns "ok" (deps: axum 0.8, tokio 1 full).
 - 2026-07-14 — Phase 0 Step 2 done: docker-compose w/ Postgres 16 + Redis 7, both healthchecks passing (named volumes pgdata/redisdata).

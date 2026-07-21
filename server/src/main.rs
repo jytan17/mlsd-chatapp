@@ -1,12 +1,15 @@
+use axum::routing::post;
 use axum::{Router, extract::State, http::StatusCode, routing::get};
 use redis::aio::ConnectionManager;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::time::Duration;
 
+mod signup;
+
 #[derive(Clone)]
 struct AppState {
-    db: PgPool,
-    redis: ConnectionManager,
+    pub db: PgPool,
+    pub redis: ConnectionManager,
 }
 
 #[tokio::main]
@@ -35,6 +38,7 @@ async fn main() {
     let app = Router::new()
         .route("/health", get(health))
         .route("/ready", get(ready))
+        .route("/signup", post(signup::signup))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
