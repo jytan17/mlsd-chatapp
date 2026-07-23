@@ -1,9 +1,14 @@
 use axum::routing::post;
-use axum::{Router, extract::State, http::StatusCode, routing::get};
+use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
 use redis::aio::ConnectionManager;
+use serde::Serialize;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::time::Duration;
+use uuid::Uuid;
 
+use crate::auth::AuthUser;
+
+mod auth;
 mod login;
 mod signup;
 
@@ -39,6 +44,7 @@ async fn main() {
     let app = Router::new()
         .route("/health", get(health))
         .route("/ready", get(ready))
+        .route("/me", get(me))
         .route("/signup", post(signup::signup))
         .route("/login", post(login::login))
         .with_state(state);
@@ -65,4 +71,25 @@ async fn ready(State(mut state): State<AppState>) -> (StatusCode, &'static str) 
         (false, _) => (StatusCode::SERVICE_UNAVAILABLE, "db down"),
         (_, false) => (StatusCode::SERVICE_UNAVAILABLE, "redis down"),
     }
+}
+
+#[derive(Serialize)]
+struct MeResp {
+    id: Uuid,
+    username: String,
+}
+
+async fn me(
+    AuthUser(user_id): AuthUser,
+    State(state): State<AppState>,
+) -> Result<Json<MeResp>, (StatusCode, &'static str)> {
+    let row: Option<(Uuid, String)> =
+        sqlx::query_as("SELECT id, username FROM users WHERE id = $1")
+            .bind(user_id)
+            .fetch_optional(&state.db)
+            .await
+            .map_err(|_| (StatusCode::NOT_FOUND, "user gone"))?;
+
+    let (id, username) = row.ok_or((StatusCode::NOT_FOUND, "user gone"))?;
+    Ok(Json(MeResp { id, username }))
 }
