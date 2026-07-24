@@ -9,6 +9,7 @@ use uuid::Uuid;
 use crate::auth::AuthUser;
 
 mod auth;
+mod conversations;
 mod login;
 mod signup;
 
@@ -47,6 +48,7 @@ async fn main() {
         .route("/me", get(me))
         .route("/signup", post(signup::signup))
         .route("/login", post(login::login))
+        .route("/conversations", post(conversations::create_conversation))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

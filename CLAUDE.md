@@ -66,8 +66,9 @@ Build > read. Touch every layer.
 ## Progress
 
 **Current phase:** Phase 1 — auth
-**Last completed step:** Phase 1 Step 4 — auth extractor (`AuthUser` via `FromRequestParts`) + protected `GET /me` (2026-07-22). **Phase 1 complete.**
-**Next step:** Phase 2 Step 1 — conversations + messages schema migration.
+**Current phase:** Phase 2 — conversations + messages
+**Last completed step:** Phase 2 Step 1 — conversations/members/messages schema (2026-07-22).
+**Next step:** Phase 2 Step 2 — `POST /conversations` create DM.
 **Files in flight:** `Cargo.toml`, `{shared,server,client}/Cargo.toml`, `{shared,client}/src/lib.rs`, `server/src/main.rs`, `docker-compose.yml`, `.env`, `justfile`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
@@ -75,6 +76,7 @@ Build > read. Touch every layer.
 
 **Log:**
 - 2026-07-20 — Phase 0 Step 5 done: redis 0.27 ConnectionManager w/ `ConnectionManagerConfig::set_connection_timeout(2s) + set_response_timeout(2s)`, `/ready` pings both pg + redis (`redis::cmd("PING").query_async::<String>` == "PONG"), 200/503 matrix verified. **Phase 0 complete.**
+- 2026-07-22 — Phase 2 Step 1 done: migration `create_conversations_and_messages` — `conversations(id, kind CHECK IN ('dm','group'), name, created_at)`, `conversation_members(conversation_id, user_id, joined_at, last_read_at, PK composite)`, `messages(id UUIDv7, conversation_id, sender_id, body, created_at)`. FKs: conv→members/messages CASCADE, user→members/messages RESTRICT. Indexes: `conversation_members(user_id)`, `messages(conversation_id, id DESC)`.
 - 2026-07-22 — Phase 1 Step 4 done: `server/src/auth.rs` — `AuthUser(Uuid)` newtype + `FromRequestParts<AppState>` impl (parse `Authorization: Bearer <token>` → redis `GET session:<token>` → parse uuid). Protected `GET /me` returns `{id, username}` from users table. Tested 200/401/401/401. **Phase 1 functionally complete.**
 - 2026-07-21 — Phase 1 Step 3 done: `POST /login` in `login.rs`, argon2 `verify_password` w/ `DUMMY_HASH` fallback on user-miss (timing parity), 32-byte OsRng token → base64url, redis `SETEX session:<token> 2592000 <user_id>`. Deps: base64 0.22 (rand skipped — reused argon2's OsRng).
 - 2026-07-21 — Phase 1 Step 2 done: `POST /signup` in new `signup.rs` module, argon2id via `Argon2::default()` + random `SaltString`, UUIDv7 ids, validation (username 3..32, password ≥8), 201/409 on unique violation/400. Deps added: argon2 0.5, uuid 1 w/ v7+serde, serde/serde_json, sqlx feature `uuid`.
