@@ -50,7 +50,10 @@ async fn main() {
         .route("/signup", post(signup::signup))
         .route("/login", post(login::login))
         .route("/conversations", post(conversations::create_conversation))
-        .route("/conversations/{id}/messages", post(messages::send_message))
+        .route(
+            "/conversations/{id}/messages",
+            post(messages::send_message).get(messages::list_messages),
+        )
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
