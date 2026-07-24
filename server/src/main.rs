@@ -11,6 +11,7 @@ use crate::auth::AuthUser;
 mod auth;
 mod conversations;
 mod login;
+mod messages;
 mod signup;
 
 #[derive(Clone)]
@@ -49,6 +50,7 @@ async fn main() {
         .route("/signup", post(signup::signup))
         .route("/login", post(login::login))
         .route("/conversations", post(conversations::create_conversation))
+        .route("/conversations/{id}/messages", post(messages::send_message))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

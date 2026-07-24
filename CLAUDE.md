@@ -67,8 +67,8 @@ Build > read. Touch every layer.
 
 **Current phase:** Phase 1 — auth
 **Current phase:** Phase 2 — conversations + messages
-**Last completed step:** Phase 2 Step 1 — conversations/members/messages schema (2026-07-22).
-**Next step:** Phase 2 Step 2 — `POST /conversations` create DM.
+**Last completed step:** Phase 2 Step 3 — `POST /conversations/:id/messages` w/ membership check (2026-07-23).
+**Next step:** Phase 2 Step 4 — `GET /conversations/:id/messages` paginated (id DESC + before cursor).
 **Files in flight:** `Cargo.toml`, `{shared,server,client}/Cargo.toml`, `{shared,client}/src/lib.rs`, `server/src/main.rs`, `docker-compose.yml`, `.env`, `justfile`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
@@ -76,6 +76,8 @@ Build > read. Touch every layer.
 
 **Log:**
 - 2026-07-20 — Phase 0 Step 5 done: redis 0.27 ConnectionManager w/ `ConnectionManagerConfig::set_connection_timeout(2s) + set_response_timeout(2s)`, `/ready` pings both pg + redis (`redis::cmd("PING").query_async::<String>` == "PONG"), 200/503 matrix verified. **Phase 0 complete.**
+- 2026-07-23 — Phase 2 Step 2 done: `POST /conversations` — DM find-or-create in tx (self-join on `conversation_members` to find existing DM; INSERT conv + 2 members if not). 201 create / 200 reuse / 400 self-dm / 400 dm needs 1 peer / 400 peer not found. Group stub 501.
+- 2026-07-23 — Phase 2 Step 3 done: `POST /conversations/{id}/messages` in new `messages.rs` module — membership check via `SELECT 1 FROM conversation_members`, 403 if not member, 400 on empty/too-long body (>4096), UUIDv7 msg id. Route uses axum 0.8 `{id}` path syntax.
 - 2026-07-22 — Phase 2 Step 1 done: migration `create_conversations_and_messages` — `conversations(id, kind CHECK IN ('dm','group'), name, created_at)`, `conversation_members(conversation_id, user_id, joined_at, last_read_at, PK composite)`, `messages(id UUIDv7, conversation_id, sender_id, body, created_at)`. FKs: conv→members/messages CASCADE, user→members/messages RESTRICT. Indexes: `conversation_members(user_id)`, `messages(conversation_id, id DESC)`.
 - 2026-07-22 — Phase 1 Step 4 done: `server/src/auth.rs` — `AuthUser(Uuid)` newtype + `FromRequestParts<AppState>` impl (parse `Authorization: Bearer <token>` → redis `GET session:<token>` → parse uuid). Protected `GET /me` returns `{id, username}` from users table. Tested 200/401/401/401. **Phase 1 functionally complete.**
 - 2026-07-21 — Phase 1 Step 3 done: `POST /login` in `login.rs`, argon2 `verify_password` w/ `DUMMY_HASH` fallback on user-miss (timing parity), 32-byte OsRng token → base64url, redis `SETEX session:<token> 2592000 <user_id>`. Deps: base64 0.22 (rand skipped — reused argon2's OsRng).
