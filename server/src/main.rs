@@ -13,6 +13,7 @@ mod conversations;
 mod login;
 mod messages;
 mod signup;
+mod ws;
 
 #[derive(Clone)]
 struct AppState {
@@ -57,6 +58,7 @@ async fn main() {
             "/conversations/{id}/messages",
             post(messages::send_message).get(messages::list_messages),
         )
+        .route("/ws", get(ws::ws_handler))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

@@ -67,8 +67,8 @@ Build > read. Touch every layer.
 
 **Current phase:** Phase 1 — auth
 **Current phase:** Phase 2 — conversations + messages
-**Last completed step:** Phase 2 Step 4 — `GET /conversations/:id/messages` paginated keyset cursor (2026-07-24).
-**Next step:** Phase 2 Step 5 — `GET /conversations` list my conversations.
+**Last completed step:** Phase 2 Step 5 — `GET /conversations` list mine w/ `array_agg` (2026-07-25). **Phase 2 core complete.**
+**Next step:** Phase 3 Step 1 — WebSocket endpoint `/ws` w/ auth handshake.
 **Files in flight:** `Cargo.toml`, `{shared,server,client}/Cargo.toml`, `{shared,client}/src/lib.rs`, `server/src/main.rs`, `docker-compose.yml`, `.env`, `justfile`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
@@ -77,6 +77,7 @@ Build > read. Touch every layer.
 **Log:**
 - 2026-07-20 — Phase 0 Step 5 done: redis 0.27 ConnectionManager w/ `ConnectionManagerConfig::set_connection_timeout(2s) + set_response_timeout(2s)`, `/ready` pings both pg + redis (`redis::cmd("PING").query_async::<String>` == "PONG"), 200/503 matrix verified. **Phase 0 complete.**
 - 2026-07-23 — Phase 2 Step 2 done: `POST /conversations` — DM find-or-create in tx (self-join on `conversation_members` to find existing DM; INSERT conv + 2 members if not). 201 create / 200 reuse / 400 self-dm / 400 dm needs 1 peer / 400 peer not found. Group stub 501.
+- 2026-07-25 — Phase 2 Step 5 done: `GET /conversations` — one query w/ self-join (`cm` filters my convs, `cm2` gathers all members), `array_agg(cm2.user_id)` → `Vec<Uuid>` auto-decoded by sqlx, `ORDER BY c.id DESC LIMIT 100`. Route chained `.post().get()`. member_ids includes self by design.
 - 2026-07-24 — Phase 2 Step 4 done: `GET /conversations/{id}/messages?before=&limit=` — keyset pagination (id DESC), membership 403 gate, `Query<T>` extractor for query params, `next_cursor` = last row id when page full, null when tail. Route chained `.post().get()` on same path.
 - 2026-07-23 — Phase 2 Step 3 done: `POST /conversations/{id}/messages` in new `messages.rs` module — membership check via `SELECT 1 FROM conversation_members`, 403 if not member, 400 on empty/too-long body (>4096), UUIDv7 msg id. Route uses axum 0.8 `{id}` path syntax.
 - 2026-07-22 — Phase 2 Step 1 done: migration `create_conversations_and_messages` — `conversations(id, kind CHECK IN ('dm','group'), name, created_at)`, `conversation_members(conversation_id, user_id, joined_at, last_read_at, PK composite)`, `messages(id UUIDv7, conversation_id, sender_id, body, created_at)`. FKs: conv→members/messages CASCADE, user→members/messages RESTRICT. Indexes: `conversation_members(user_id)`, `messages(conversation_id, id DESC)`.
