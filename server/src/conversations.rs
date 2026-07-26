@@ -88,7 +88,12 @@ async fn create_dm(
         .bind(conv_id)
         .execute(&mut *tx)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("insert conv: {e}")))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("insert conv: {e}"),
+            )
+        })?;
 
     sqlx::query(
         "INSERT INTO conversation_members (conversation_id, user_id) VALUES ($1, $2), ($1, $3)",
@@ -104,7 +109,10 @@ async fn create_dm(
                 return (StatusCode::BAD_REQUEST, "peer user not found".into());
             }
         }
-        (StatusCode::INTERNAL_SERVER_ERROR, format!("insert members: {e}"))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("insert members: {e}"),
+        )
     })?;
 
     tx.commit()
@@ -120,4 +128,41 @@ async fn create_dm(
             name: None,
         }),
     ))
+}
+
+pub async fn list_conversations(
+    AuthUser(me): AuthUser,
+    State(state): State<AppState>,
+) -> Result<Json<Vec<ConvResp>>, (StatusCode, String)> {
+    let rows: Vec<(Uuid, String, Option<String>, Vec<Uuid>)> = sqlx::query_as(
+        r#"
+        SELECT
+            c.id,
+            c.kind,
+            c.name,
+            array_agg(cm2.user_id) AS member_ids
+        FROM conversations c
+        JOIN conversation_members cm ON cm.conversation_id = c.id AND cm.user_id = $1
+        JOIN conversation_members cm2 ON cm2.conversation_id = c.id
+        GROUP BY c.id
+        ORDER BY c.id DESC
+        LIMIT 100
+        "#,
+    )
+    .bind(me)
+    .fetch_all(&state.db)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("db: {e}")))?;
+
+    let convs = rows
+        .into_iter()
+        .map(|(id, kind, name, member_ids)| ConvResp {
+            id,
+            kind,
+            member_ids,
+            name,
+        })
+        .collect();
+
+    Ok(Json(convs))
 }

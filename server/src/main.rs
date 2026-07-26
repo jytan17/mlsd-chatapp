@@ -49,7 +49,10 @@ async fn main() {
         .route("/me", get(me))
         .route("/signup", post(signup::signup))
         .route("/login", post(login::login))
-        .route("/conversations", post(conversations::create_conversation))
+        .route(
+            "/conversations",
+            post(conversations::create_conversation).get(conversations::list_conversations),
+        )
         .route(
             "/conversations/{id}/messages",
             post(messages::send_message).get(messages::list_messages),
