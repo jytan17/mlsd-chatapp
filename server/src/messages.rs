@@ -72,15 +72,32 @@ pub async fn send_message(
     .await
     .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "insert err"))?;
 
-    Ok((
-        StatusCode::CREATED,
-        Json(MsgResp {
-            id: msg_id,
-            conversation_id: conv_id,
-            sender_id: me,
-            body: req.body,
-        }),
-    ))
+    let members: Vec<Uuid> =
+        sqlx::query_scalar("SELECT user_id FROM conversation_members WHERE conversation_id = $1")
+            .bind(conv_id)
+            .fetch_all(&state.db)
+            .await
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "db err"))?;
+
+    let resp = MsgResp {
+        id: msg_id,
+        conversation_id: conv_id,
+        sender_id: me,
+        body: req.body,
+    };
+
+    let payload = serde_json::to_string(&resp).unwrap();
+    {
+        let hub = state.hub.lock().unwrap();
+        for m in &members {
+            if let Some(senders) = hub.get(m) {
+                for s in senders {
+                    let _ = s.send(payload.clone());
+                }
+            }
+        }
+    }
+    Ok((StatusCode::CREATED, Json(resp)))
 }
 
 pub async fn list_messages(

@@ -3,7 +3,10 @@ use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
 use redis::aio::ConnectionManager;
 use serde::Serialize;
 use sqlx::{PgPool, postgres::PgPoolOptions};
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
+use tokio::sync::mpsc::UnboundedSender;
 use uuid::Uuid;
 
 use crate::auth::AuthUser;
@@ -15,10 +18,13 @@ mod messages;
 mod signup;
 mod ws;
 
+pub type Hub = Arc<Mutex<HashMap<Uuid, Vec<UnboundedSender<String>>>>>;
+
 #[derive(Clone)]
 struct AppState {
     pub db: PgPool,
     pub redis: ConnectionManager,
+    pub hub: Hub,
 }
 
 #[tokio::main]
@@ -43,7 +49,11 @@ async fn main() {
     .await
     .expect("redis connect");
 
-    let state = AppState { db, redis };
+    let state = AppState {
+        db,
+        redis,
+        hub: Arc::new(Mutex::new(HashMap::new())),
+    };
     let app = Router::new()
         .route("/health", get(health))
         .route("/ready", get(ready))

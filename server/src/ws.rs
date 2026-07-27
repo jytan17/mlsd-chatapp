@@ -6,32 +6,55 @@ use axum::{
     response::Response,
 };
 use futures_util::{SinkExt, StreamExt};
+use tokio::sync::mpsc;
 use uuid::Uuid;
 
-use crate::{AppState, auth::AuthUser};
+use crate::{AppState, Hub, auth::AuthUser};
 
 pub async fn ws_handler(
     AuthUser(user_id): AuthUser,
-    State(_state): State<AppState>,
+    State(state): State<AppState>,
     ws: WebSocketUpgrade,
 ) -> Response {
-    ws.on_upgrade(move |socket| handle_socket(socket, user_id))
+    ws.on_upgrade(move |socket| handle_socket(socket, user_id, state.hub))
 }
 
-async fn handle_socket(mut socket: WebSocket, user_id: Uuid) {
-    let hello = format!("hello {user_id}");
-    let _ = socket.send(Message::Text(hello.into())).await;
+async fn handle_socket(socket: WebSocket, user_id: Uuid, hub: Hub) {
+    let (mut sink, mut stream) = socket.split();
+    let (tx, mut rx) = mpsc::unbounded_channel::<String>();
 
-    while let Some(Ok(msg)) = socket.next().await {
-        match msg {
-            Message::Text(t) => {
-                let echo = format!("echo: {t}");
-                if socket.send(Message::Text(echo.into())).await.is_err() {
-                    break;
-                }
+    hub.lock()
+        .unwrap()
+        .entry(user_id)
+        .or_default()
+        .push(tx.clone());
+
+    let mut send_task = tokio::spawn(async move {
+        while let Some(msg) = rx.recv().await {
+            if sink.send(Message::Text(msg.into())).await.is_err() {
+                break;
             }
-            Message::Close(_) => break,
-            _ => {}
+        }
+    });
+
+    let recv_task = async {
+        while let Some(Ok(msg)) = stream.next().await {
+            if let Message::Close(_) = msg {
+                break;
+            }
+        }
+    };
+
+    tokio::select! {
+        _ = &mut send_task => {},
+        _ = recv_task => send_task.abort(),
+    }
+
+    let mut guard = hub.lock().unwrap();
+    if let Some(v) = guard.get_mut(&user_id) {
+        v.retain(|s| !s.same_channel(&tx));
+        if v.is_empty() {
+            guard.remove(&user_id);
         }
     }
 }
