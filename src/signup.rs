@@ -3,22 +3,10 @@ use argon2::{
     password_hash::{PasswordHasher, SaltString, rand_core::OsRng},
 };
 use axum::{Json, extract::State, http::StatusCode};
-use serde::{Deserialize, Serialize};
+use crate::contract::{SignupReq, SignupResp};
 use uuid::Uuid;
 
 use crate::AppState;
-
-#[derive(Deserialize)]
-pub struct SignupReq {
-    pub username: String,
-    pub password: String,
-}
-
-#[derive(Serialize)]
-pub struct SignupResp {
-    pub id: Uuid,
-    pub username: String,
-}
 
 pub async fn signup(
     State(state): State<AppState>,

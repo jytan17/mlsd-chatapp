@@ -4,24 +4,13 @@ use argon2::{
 };
 use axum::{Json, extract::State, http::StatusCode};
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
-use serde::{Deserialize, Serialize};
+use crate::contract::{LoginReq, LoginResp};
 use uuid::Uuid;
 
 use crate::AppState;
 
 const DUMMY_HASH: &str = "tatftahbbktfatene";
 const SESSION_TTL_SECS: u64 = 60 * 60 * 24 * 30;
-
-#[derive(Deserialize)]
-pub struct LoginReq {
-    pub username: String,
-    pub password: String,
-}
-
-#[derive(Serialize)]
-pub struct LoginResp {
-    pub token: String,
-}
 
 pub async fn login(
     State(mut state): State<AppState>,

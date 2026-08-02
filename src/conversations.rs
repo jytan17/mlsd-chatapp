@@ -1,23 +1,8 @@
 use axum::{Json, extract::State, http::StatusCode};
-use serde::{Deserialize, Serialize};
+use crate::contract::{ConvResp, CreateConvReq};
 use uuid::Uuid;
 
 use crate::{AppState, auth::AuthUser};
-
-#[derive(Deserialize)]
-pub struct CreateConvReq {
-    pub kind: String,
-    pub member_ids: Vec<Uuid>,
-    pub name: Option<String>,
-}
-
-#[derive(Serialize)]
-pub struct ConvResp {
-    pub id: Uuid,
-    pub kind: String,
-    pub member_ids: Vec<Uuid>,
-    pub name: Option<String>,
-}
 
 pub async fn create_conversation(
     AuthUser(me): AuthUser,

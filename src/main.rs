@@ -1,7 +1,6 @@
 use axum::routing::post;
 use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
 use redis::aio::ConnectionManager;
-use serde::Serialize;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -12,11 +11,14 @@ use uuid::Uuid;
 use crate::auth::AuthUser;
 
 mod auth;
+mod contract;
 mod conversations;
 mod login;
 mod messages;
 mod signup;
 mod ws;
+
+use crate::contract::MeResp;
 
 pub type Hub = Arc<Mutex<HashMap<Uuid, Vec<UnboundedSender<String>>>>>;
 
@@ -93,12 +95,6 @@ async fn ready(State(mut state): State<AppState>) -> (StatusCode, &'static str) 
         (false, _) => (StatusCode::SERVICE_UNAVAILABLE, "db down"),
         (_, false) => (StatusCode::SERVICE_UNAVAILABLE, "redis down"),
     }
-}
-
-#[derive(Serialize)]
-struct MeResp {
-    id: Uuid,
-    username: String,
 }
 
 async fn me(

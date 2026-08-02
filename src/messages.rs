@@ -1,45 +1,19 @@
+use crate::{AppState, auth::AuthUser};
 use axum::{
     Json,
     extract::Query,
     extract::{Path, State},
     http::StatusCode,
 };
-use serde::{Deserialize, Serialize};
+use crate::contract::{ListMsgQuery, ListMsgResp, Message, SendMsgReq, ServerEvent};
 use uuid::Uuid;
-
-use crate::{AppState, auth::AuthUser};
-
-#[derive(Deserialize)]
-pub struct SendMsgReq {
-    pub body: String,
-}
-
-#[derive(Serialize)]
-pub struct MsgResp {
-    pub id: Uuid,
-    pub conversation_id: Uuid,
-    pub sender_id: Uuid,
-    pub body: String,
-}
-
-#[derive(Deserialize)]
-pub struct ListMsgQuery {
-    pub before: Option<Uuid>,
-    pub limit: Option<i64>,
-}
-
-#[derive(Serialize)]
-pub struct ListMsgResp {
-    pub messages: Vec<MsgResp>,
-    pub next_cursor: Option<Uuid>,
-}
 
 pub async fn send_message(
     AuthUser(me): AuthUser,
     State(state): State<AppState>,
     Path(conv_id): Path<Uuid>,
     Json(req): Json<SendMsgReq>,
-) -> Result<(StatusCode, Json<MsgResp>), (StatusCode, &'static str)> {
+) -> Result<(StatusCode, Json<ServerEvent>), (StatusCode, &'static str)> {
     if req.body.is_empty() {
         return Err((StatusCode::BAD_REQUEST, "empty body"));
     }
@@ -79,14 +53,14 @@ pub async fn send_message(
             .await
             .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "db err"))?;
 
-    let resp = MsgResp {
+    let event = ServerEvent::NewMessage(Message {
         id: msg_id,
         conversation_id: conv_id,
         sender_id: me,
         body: req.body,
-    };
+    });
 
-    let payload = serde_json::to_string(&resp).unwrap();
+    let payload = serde_json::to_string(&event).unwrap();
     {
         let hub = state.hub.lock().unwrap();
         for m in &members {
@@ -97,7 +71,7 @@ pub async fn send_message(
             }
         }
     }
-    Ok((StatusCode::CREATED, Json(resp)))
+    Ok((StatusCode::CREATED, Json(event)))
 }
 
 pub async fn list_messages(
@@ -159,7 +133,7 @@ pub async fn list_messages(
 
     let messages = rows
         .into_iter()
-        .map(|(id, conversation_id, sender_id, body)| MsgResp {
+        .map(|(id, conversation_id, sender_id, body)| Message {
             id,
             conversation_id,
             sender_id,
