@@ -67,14 +67,15 @@ Build > read. Touch every layer.
 
 **Current phase:** Phase 1 — auth
 **Current phase:** Phase 2 — conversations + messages
-**Last completed step:** Phase 2 Step 5 — `GET /conversations` list mine w/ `array_agg` (2026-07-25). **Phase 2 core complete.**
-**Next step:** Phase 3 Step 1 — WebSocket endpoint `/ws` w/ auth handshake.
+**Last completed step:** Phase 3 Step 2 — single-node fanout via in-memory connection registry (Hub) (2026-07-27).
+**Next step:** Phase 3 Step 3 — typed WS protocol in `shared/lib.rs` (`ServerEvent`/`ClientEvent` enums), replace raw JSON strings.
 **Files in flight:** `Cargo.toml`, `{shared,server,client}/Cargo.toml`, `{shared,client}/src/lib.rs`, `server/src/main.rs`, `docker-compose.yml`, `.env`, `justfile`
 **Open decisions:**
 - Frontend framework (leptos vs dioxus vs yew) — defer to phase 10
 - Queue (NATS vs Kafka) — defer to phase 4
 
 **Log:**
+- 2026-07-27 — Phase 3 Step 1+2 done: `/ws` endpoint w/ `AuthUser` handshake gate + in-memory fanout. `Hub = Arc<Mutex<HashMap<Uuid, Vec<UnboundedSender<String>>>>>` in `AppState` (user_id → per-device senders). `handle_socket`: `socket.split()` → sink/stream, register `tx` clone in Hub, spawn write-task (rx→sink), recv-task watches Close, `select!` (abort spawned send_task on recv end; local recv future auto-dropped), cleanup `retain(same_channel)` + remove-if-empty. `send_message` fanout: query members → lookup Hub → `tx.send(serde_json payload)` (includes sender, ignores dead senders). Single-node only (in-mem map) — Redis pub/sub deferred. Unbounded channel = slow-consumer risk, deferred (bounded+disconnect later).
 - 2026-07-20 — Phase 0 Step 5 done: redis 0.27 ConnectionManager w/ `ConnectionManagerConfig::set_connection_timeout(2s) + set_response_timeout(2s)`, `/ready` pings both pg + redis (`redis::cmd("PING").query_async::<String>` == "PONG"), 200/503 matrix verified. **Phase 0 complete.**
 - 2026-07-23 — Phase 2 Step 2 done: `POST /conversations` — DM find-or-create in tx (self-join on `conversation_members` to find existing DM; INSERT conv + 2 members if not). 201 create / 200 reuse / 400 self-dm / 400 dm needs 1 peer / 400 peer not found. Group stub 501.
 - 2026-07-25 — Phase 2 Step 5 done: `GET /conversations` — one query w/ self-join (`cm` filters my convs, `cm2` gathers all members), `array_agg(cm2.user_id)` → `Vec<Uuid>` auto-decoded by sqlx, `ORDER BY c.id DESC LIMIT 100`. Route chained `.post().get()`. member_ids includes self by design.
