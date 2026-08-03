@@ -59,9 +59,14 @@ Build > read. Touch every layer.
 - **User is new to Rust.** AI provides the actual code each step — user copies, reads, asks questions. Do NOT tell user to "write it yourself". The learning loop is: read code → ask why → understand → next chunk.
 - For each code drop: explain **why** (concept, tradeoffs), then **code**, then **what to watch / try**.
 - **Code chunks = section-level w/ left-margin diff markers.** Show each logical section (imports, struct, full updated fn) as a self-contained block. Prefix: `+ ` added, `- ` removed, `~ ` modified in place, `  ` (two spaces) unchanged. Uniform across block. User scans left edge to spot changes. Strip prefixes before pasting. Never full-file replacements.
+- **Always cite the line number** when giving updated/changed code — tell user exactly which line(s) the edit lands on (e.g. "line 42" or "lines 59-72"), so they can locate it fast. Read the file if unsure of current line numbers.
 - Anticipate beginner Rust questions (ownership, async, lifetimes, traits) — flag tricky bits inline.
 - After user reports done → update **Progress** section below. Then wait for next ask.
 - New session → AI reads Progress section first, then reads **all source files** (`server/src/*.rs`, `shared/src/*.rs`, `client/src/*.rs`), `Cargo.toml`s, `docker-compose.yml`, `migrations/*.sql`, `justfile`. Builds full mental model before answering. No "let me check" mid-conversation.
+
+## End-of-project TODO
+
+- **Quiz user on EVERYTHING** at project end: system-design concepts (fanout, backpressure, idempotency, pull/push, contract-first, keyset pagination, sessions, etc.) + Rust (ownership, borrow, async, traits, serde, tokio). Comprehensive review before calling it done. Do not skip.
 
 ## Progress
 

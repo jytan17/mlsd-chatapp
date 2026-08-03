@@ -9,7 +9,11 @@ use futures_util::{SinkExt, StreamExt};
 use tokio::sync::mpsc;
 use uuid::Uuid;
 
-use crate::{AppState, Hub, auth::AuthUser};
+use crate::{
+    AppState, Hub,
+    auth::AuthUser,
+    contract::{ClientEvent, ServerEvent},
+};
 
 pub async fn ws_handler(
     AuthUser(user_id): AuthUser,
@@ -37,10 +41,18 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, hub: Hub) {
         }
     });
 
-    let recv_task = async {
+    let ping_tx = tx.clone();
+    let recv_task = async move {
         while let Some(Ok(msg)) = stream.next().await {
-            if let Message::Close(_) = msg {
-                break;
+            match msg {
+                Message::Text(txt) => match serde_json::from_str::<ClientEvent>(&txt) {
+                    Ok(ClientEvent::Ping) => {
+                        let pong = serde_json::to_string(&ServerEvent::Pong).unwrap();
+                        let _ = ping_tx.send(pong);
+                    }
+                    Err(_) => {}
+                },
+                _ => {}
             }
         }
     };

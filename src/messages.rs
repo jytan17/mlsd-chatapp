@@ -1,3 +1,4 @@
+use crate::contract::{ListMsgQuery, ListMsgResp, Message, SendMsgReq, ServerEvent};
 use crate::{AppState, auth::AuthUser};
 use axum::{
     Json,
@@ -5,7 +6,6 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
 };
-use crate::contract::{ListMsgQuery, ListMsgResp, Message, SendMsgReq, ServerEvent};
 use uuid::Uuid;
 
 pub async fn send_message(
@@ -13,7 +13,7 @@ pub async fn send_message(
     State(state): State<AppState>,
     Path(conv_id): Path<Uuid>,
     Json(req): Json<SendMsgReq>,
-) -> Result<(StatusCode, Json<ServerEvent>), (StatusCode, &'static str)> {
+) -> Result<(StatusCode, Json<Message>), (StatusCode, &'static str)> {
     if req.body.is_empty() {
         return Err((StatusCode::BAD_REQUEST, "empty body"));
     }
@@ -53,13 +53,14 @@ pub async fn send_message(
             .await
             .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "db err"))?;
 
-    let event = ServerEvent::NewMessage(Message {
+    let msg = Message {
         id: msg_id,
         conversation_id: conv_id,
         sender_id: me,
         body: req.body,
-    });
+    };
 
+    let event = ServerEvent::NewMessage(msg.clone());
     let payload = serde_json::to_string(&event).unwrap();
     {
         let hub = state.hub.lock().unwrap();
@@ -71,7 +72,7 @@ pub async fn send_message(
             }
         }
     }
-    Ok((StatusCode::CREATED, Json(event)))
+    Ok((StatusCode::CREATED, Json(msg)))
 }
 
 pub async fn list_messages(
