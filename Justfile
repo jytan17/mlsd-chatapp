@@ -1,5 +1,5 @@
-run:
-    cargo run -p server
+run port="3000":
+    PORT={{ port }} cargo run -p server
 
 db-up:
     docker compose up -d

@@ -13,6 +13,7 @@ use crate::auth::AuthUser;
 mod auth;
 mod contract;
 mod conversations;
+mod fanout;
 mod login;
 mod messages;
 mod signup;
@@ -43,7 +44,7 @@ async fn main() {
 
     let redis_client = redis::Client::open(redis_url).expect("redis client");
     let redis = ConnectionManager::new_with_config(
-        redis_client,
+        redis_client.clone(),
         redis::aio::ConnectionManagerConfig::new()
             .set_connection_timeout(Duration::from_secs(2))
             .set_response_timeout(Duration::from_secs(2)),
@@ -56,6 +57,8 @@ async fn main() {
         redis,
         hub: Arc::new(Mutex::new(HashMap::new())),
     };
+
+    tokio::spawn(fanout::run_subscriber(redis_client, state.hub.clone()));
     let app = Router::new()
         .route("/health", get(health))
         .route("/ready", get(ready))
@@ -73,7 +76,10 @@ async fn main() {
         .route("/ws", get(ws::ws_handler))
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".into());
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}"))
+        .await
+        .unwrap();
     println!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
 }
