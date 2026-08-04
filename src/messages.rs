@@ -1,5 +1,5 @@
 use crate::contract::{ListMsgQuery, ListMsgResp, Message, SendMsgReq, ServerEvent};
-use crate::fanout::{Broadcast, CHANNEL};
+use crate::fanout::{Broadcast, channel};
 use crate::{AppState, auth::AuthUser};
 use axum::{
     Json,
@@ -67,7 +67,7 @@ pub async fn send_message(
     let raw = serde_json::to_string(&broadcast).unwrap();
     let mut conn = state.redis.clone();
     let _: () = redis::cmd("PUBLISH")
-        .arg(CHANNEL)
+        .arg(channel(conv_id))
         .arg(raw)
         .exec_async(&mut conn)
         .await
