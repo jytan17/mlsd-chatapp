@@ -28,6 +28,7 @@ pub struct Message {
 pub enum ServerEvent {
     NewMessage(Message),
     Pong,
+    Error(String),
 }
 
 /// Client → server.
@@ -35,6 +36,7 @@ pub enum ServerEvent {
 #[serde(tag = "type", content = "data", rename_all = "snake_case")]
 pub enum ClientEvent {
     Ping,
+    SendMessage { conversation_id: Uuid, body: String },
 }
 
 // ===== auth API =====

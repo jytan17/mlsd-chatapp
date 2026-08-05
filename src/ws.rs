@@ -56,6 +56,8 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
     });
 
     let ping_tx = tx.clone();
+    let db = state.db.clone();
+    let mut msg_redis = state.redis.clone();
     let recv_task = async move {
         while let Some(Ok(msg)) = stream.next().await {
             match msg {
@@ -63,6 +65,24 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
                     Ok(ClientEvent::Ping) => {
                         let pong = serde_json::to_string(&ServerEvent::Pong).unwrap();
                         let _ = ping_tx.send(pong);
+                    }
+                    Ok(ClientEvent::SendMessage {
+                        conversation_id,
+                        body,
+                    }) => {
+                        if let Err((_, e)) = crate::messages::create_message(
+                            &db,
+                            &mut msg_redis,
+                            user_id,
+                            conversation_id,
+                            body,
+                        )
+                        .await
+                        {
+                            let err =
+                                serde_json::to_string(&ServerEvent::Error(e.to_string())).unwrap();
+                            let _ = ping_tx.send(err);
+                        }
                     }
                     Err(_) => {}
                 },

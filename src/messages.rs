@@ -7,6 +7,8 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
 };
+use redis::aio::ConnectionManager;
+use sqlx::PgPool;
 use uuid::Uuid;
 
 pub async fn send_message(
@@ -15,10 +17,22 @@ pub async fn send_message(
     Path(conv_id): Path<Uuid>,
     Json(req): Json<SendMsgReq>,
 ) -> Result<(StatusCode, Json<Message>), (StatusCode, &'static str)> {
-    if req.body.is_empty() {
+    let mut redis = state.redis.clone();
+    let msg = create_message(&state.db, &mut redis, me, conv_id, req.body).await?;
+    Ok((StatusCode::CREATED, Json(msg)))
+}
+
+pub async fn create_message(
+    db: &PgPool,
+    redis: &mut ConnectionManager,
+    sender_id: Uuid,
+    conv_id: Uuid,
+    body: String,
+) -> Result<Message, (StatusCode, &'static str)> {
+    if body.is_empty() {
         return Err((StatusCode::BAD_REQUEST, "empty body"));
     }
-    if req.body.len() > 4096 {
+    if body.len() > 4096 {
         return Err((StatusCode::BAD_REQUEST, "body too long"));
     }
 
@@ -26,8 +40,8 @@ pub async fn send_message(
         "SELECT 1 FROM conversation_members WHERE conversation_id = $1 AND user_id = $2",
     )
     .bind(conv_id)
-    .bind(me)
-    .fetch_optional(&state.db)
+    .bind(sender_id)
+    .fetch_optional(db)
     .await
     .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "db err"))?;
 
@@ -41,38 +55,38 @@ pub async fn send_message(
     )
     .bind(msg_id)
     .bind(conv_id)
-    .bind(me)
-    .bind(&req.body)
-    .execute(&state.db)
+    .bind(sender_id)
+    .bind(&body)
+    .execute(db)
     .await
     .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "insert err"))?;
 
     let members: Vec<Uuid> =
         sqlx::query_scalar("SELECT user_id FROM conversation_members WHERE conversation_id = $1")
             .bind(conv_id)
-            .fetch_all(&state.db)
+            .fetch_all(db)
             .await
             .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "db err"))?;
 
     let msg = Message {
         id: msg_id,
         conversation_id: conv_id,
-        sender_id: me,
-        body: req.body,
+        sender_id: sender_id,
+        body: body,
     };
 
     let event = ServerEvent::NewMessage(msg.clone());
     let payload = serde_json::to_string(&event).unwrap();
     let broadcast = Broadcast { members, payload };
     let raw = serde_json::to_string(&broadcast).unwrap();
-    let mut conn = state.redis.clone();
+    let mut conn = redis.clone();
     let _: () = redis::cmd("PUBLISH")
         .arg(channel(conv_id))
         .arg(raw)
         .exec_async(&mut conn)
         .await
         .unwrap_or(());
-    Ok((StatusCode::CREATED, Json(msg)))
+    Ok(msg)
 }
 
 pub async fn list_messages(

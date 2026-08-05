@@ -45,9 +45,10 @@ Hour estimates = solo, learning pace (docs + debug). Rust-new adds ~30%.
 | 7 Media | 10–15 |
 | 8 Scale/reliability | 15–25 |
 | 9 Observability | 10–15 |
-| 10 Frontend WASM | 25–40 |
+| ~~10 Frontend WASM~~ | ~~cut~~ |
+| 10 Test client (shabby) | 1–2 |
 | 11 k8s deploy | 10–20 |
-| **Total** | **140–225** |
+| **Total** | **~115–185** |
 
 Cadence: 5 hr/wk → 7–10 mo · 10 hr/wk → 3.5–5 mo · 20 hr/wk → 2–3 mo.
 Backend-only path (skip 10+11): ~100–165 hrs.
@@ -112,9 +113,10 @@ Backend-only path (skip 10+11): ~100–165 hrs.
 - Grafana dashboards. Alert rules.
 - **Design:** RED/USE method. SLO/SLI/error budget.
 
-### Phase 10 — frontend _(25–40 hrs)_
-- Rust WASM client. WS client. Local cache (IndexedDB).
-- **Design:** optimistic UI, offline-first, conflict resolution.
+### Phase 10 — test client (shabby) _(1–2 hrs)_
+- Single static `index.html` + vanilla JS: `fetch` for REST, `new WebSocket()` for realtime, a few inputs.
+- No framework, no build step, no crate. Doubles as the manual test harness for later phases.
+- **Cut:** full Rust WASM frontend (was 25–40 hrs) — off-goal (frontend, not systems). Backend is consumed via the contract as an external client would.
 
 ### Phase 11 — deploy _(10–20 hrs)_
 - k8s manifests. Helm. Rolling deploy.
