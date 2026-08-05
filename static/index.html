@@ -1,0 +1,89 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>chat test</title>
+<body>
+  <h3>login</h3>
+  <select id="user">
+    <option value="bob">bob</option>
+    <option value="carol">carol</option>
+  </select>
+  <input id="pass" type="password" value="password">
+  <button onclick="login()">login + connect WS</button>
+  <div id="who"></div>
+  <div id="wsstate">ws: closed</div>
+
+  <h3>conversation</h3>
+  <select id="conv"></select>
+  <button onclick="loadConvs()">refresh convs</button>
+  <button onclick="loadMsgs()">load history</button>
+
+  <h3>send (over WS)</h3>
+  <input id="body" placeholder="message">
+  <button onclick="send()">send</button>
+
+  <h3>live log</h3>
+  <pre id="log"></pre>
+
+<script>
+let token = null;
+let ws = null;
+
+function logline(s) {
+  log.textContent = new Date().toLocaleTimeString() + '  ' + s + '\n' + log.textContent;
+}
+
+async function login() {
+  const r = await fetch('/login', {method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({username: user.value, password: pass.value})});
+  const j = await r.json();
+  token = j.token;
+  const me = await (await fetch('/me', {headers:{authorization:'Bearer '+token}})).json();
+  who.textContent = 'logged in as ' + me.username + ' (' + me.id + ')';
+  await loadConvs();
+  connectWs();
+}
+
+function connectWs() {
+  if (ws) ws.close();
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(proto + '://' + location.host + '/ws?token=' + token);
+  ws.onopen = () => wsstate.textContent = 'ws: open';
+  ws.onclose = () => wsstate.textContent = 'ws: closed';
+  ws.onerror = () => wsstate.textContent = 'ws: error';
+  ws.onmessage = (e) => {
+    const ev = JSON.parse(e.data);
+    if (ev.type === 'new_message') {
+      const m = ev.data;
+      logline('MSG [' + m.sender_id.slice(0,8) + '] ' + m.body);
+    } else {
+      logline(e.data);
+    }
+  };
+}
+
+async function loadConvs() {
+  const r = await fetch('/conversations', {headers:{authorization:'Bearer '+token}});
+  const j = await r.json();
+  conv.innerHTML = '';
+  for (const c of j) {
+    const o = document.createElement('option');
+    o.value = c.id; o.textContent = c.id;
+    conv.appendChild(o);
+  }
+}
+
+async function loadMsgs() {
+  const r = await fetch('/conversations/' + conv.value + '/messages',
+    {headers:{authorization:'Bearer '+token}});
+  const j = await r.json();
+  for (const m of j.messages.slice().reverse()) {
+    logline('HIST [' + m.sender_id.slice(0,8) + '] ' + m.body);
+  }
+}
+
+function send() {
+  if (!ws || ws.readyState !== 1) { logline('ws not open'); return; }
+  ws.send(JSON.stringify({type:'send_message', data:{conversation_id: conv.value, body: body.value}}));
+  body.value = '';
+}
+</script>

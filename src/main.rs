@@ -1,5 +1,5 @@
 use axum::routing::post;
-use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
+use axum::{Json, Router, extract::State, http::StatusCode, response::Html, routing::get};
 use redis::aio::ConnectionManager;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::collections::HashMap;
@@ -70,6 +70,7 @@ async fn main() {
 
     tokio::spawn(fanout::run_subscriber(pubsub_stream, state.hub.clone()));
     let app = Router::new()
+        .route("/", get(index))
         .route("/health", get(health))
         .route("/ready", get(ready))
         .route("/me", get(me))
@@ -92,6 +93,10 @@ async fn main() {
         .unwrap();
     println!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
+}
+
+async fn index() -> Html<&'static str> {
+    Html(include_str!("../static/index.html"))
 }
 
 async fn health() -> &'static str {

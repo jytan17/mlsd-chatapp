@@ -15,15 +15,24 @@ impl FromRequestParts<AppState> for AuthUser {
         parts: &mut Parts,
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
-        let header = parts
+        // Prefer `Authorization: Bearer <token>` (curl/websocat).
+        // Fall back to `?token=<token>` query param — browsers can't set
+        // headers on a WebSocket handshake, so the WS client passes it in the URL.
+        let header_token = parts
             .headers
             .get("authorization")
             .and_then(|h| h.to_str().ok())
-            .ok_or((StatusCode::UNAUTHORIZED, "no auth header"))?;
+            .and_then(|h| h.strip_prefix("Bearer "));
 
-        let token = header
-            .strip_prefix("Bearer ")
-            .ok_or((StatusCode::UNAUTHORIZED, "bad scheme"))?;
+        let query_token = parts.uri.query().and_then(|q| {
+            q.split('&')
+                .find_map(|kv| kv.strip_prefix("token="))
+        });
+
+        let token =
+            header_token
+                .or(query_token)
+                .ok_or((StatusCode::UNAUTHORIZED, "no token"))?;
 
         let mut redis_conn = state.redis.clone();
         let user_id: Option<String> = redis::cmd("GET")
