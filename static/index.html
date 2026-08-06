@@ -1,6 +1,33 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>chat test</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 1rem auto; padding: 0 1rem; }
+  input, select { font: inherit; padding: 6px 8px; margin: 2px; border-radius: 6px; }
+  pre { padding: 8px; border-radius: 6px; overflow: auto; max-height: 50vh; }
+
+  button {
+    font: inherit; font-weight: 600; padding: 8px 16px; margin: 3px;
+    border: none; border-radius: 6px; cursor: pointer;
+    background: #2563eb; color: #fff;
+  }
+  button:hover { background: #1d4ed8; }
+  button:active { transform: translateY(1px); }
+  /* secondary (non-primary) actions */
+  button.secondary { background: #64748b; }
+  button.secondary:hover { background: #475569; }
+
+  @media (prefers-color-scheme: dark) {
+    body { background: #16181c; color: #d7dae0; }
+    input, select { background: #23262e; color: #d7dae0; border: 1px solid #3a3f4b; }
+    pre { background: #0f1115; border: 1px solid #2a2e37; }
+    h3 { color: #9aa4b2; }
+  }
+  @media (prefers-color-scheme: light) {
+    pre { background: #f4f5f7; border: 1px solid #ddd; }
+    input, select { border: 1px solid #ccc; }
+  }
+</style>
 <body>
   <h3>login</h3>
   <select id="user">
@@ -14,8 +41,8 @@
 
   <h3>conversation</h3>
   <select id="conv"></select>
-  <button onclick="loadConvs()">refresh convs</button>
-  <button onclick="loadMsgs()">load history</button>
+  <button class="secondary" onclick="loadConvs()">refresh convs</button>
+  <button class="secondary" onclick="loadMsgs()">load history</button>
 
   <h3>send (over WS)</h3>
   <input id="body" placeholder="message">
