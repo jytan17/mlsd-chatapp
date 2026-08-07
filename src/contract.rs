@@ -94,9 +94,15 @@ pub struct SendMsgReq {
     pub body: String,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct MarkReadReq {
+    pub message_id: Uuid,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ListMsgQuery {
     pub before: Option<Uuid>,
+    pub after: Option<Uuid>,
     pub limit: Option<i64>,
 }
 

@@ -1,4 +1,4 @@
-use crate::contract::{ListMsgQuery, ListMsgResp, Message, SendMsgReq, ServerEvent};
+use crate::contract::{ListMsgQuery, ListMsgResp, MarkReadReq, Message, SendMsgReq, ServerEvent};
 use crate::fanout::{Broadcast, channel};
 use crate::{AppState, auth::AuthUser};
 use axum::{
@@ -110,8 +110,21 @@ pub async fn list_messages(
         return Err((StatusCode::FORBIDDEN, "not a member"));
     }
 
-    let rows: Vec<(Uuid, Uuid, Uuid, String)> = match q.before {
-        Some(before) => sqlx::query_as(
+    let rows: Vec<(Uuid, Uuid, Uuid, String)> = match (q.after, q.before) {
+        (Some(after), _) => sqlx::query_as(
+            "SELECT
+                id, conversation_id, sender_id, body
+            FROM messages
+            WHERE conversation_id = $1 AND id > $2
+            ORDER BY id ASC
+            LIMIT $3
+            ",
+        )
+        .bind(conv_id)
+        .bind(after)
+        .bind(limit),
+
+        (_, Some(before)) => sqlx::query_as(
             "SELECT
                 id, conversation_id, sender_id, body
             FROM messages
@@ -123,7 +136,7 @@ pub async fn list_messages(
         .bind(conv_id)
         .bind(before)
         .bind(limit),
-        None => sqlx::query_as(
+        (None, None) => sqlx::query_as(
             "
             SELECT
                 id, conversation_id, sender_id, body
@@ -160,4 +173,40 @@ pub async fn list_messages(
         messages,
         next_cursor,
     }))
+}
+
+pub async fn mark_read(
+    AuthUser(me): AuthUser,
+    State(state): State<AppState>,
+    Path(conv_id): Path<Uuid>,
+    Json(req): Json<MarkReadReq>,
+) -> Result<StatusCode, (StatusCode, &'static str)> {
+    let res = sqlx::query(
+        "UPDATE conversation_members
+        SET last_read_message_id = $1
+        WHERE conversation_id = $2 AND user_id = $3
+            AND (last_read_message_id IS NULL OR $1 > last_read_message_id)",
+    )
+    .bind(req.message_id)
+    .bind(conv_id)
+    .bind(me)
+    .execute(&state.db)
+    .await
+    .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "db err"))?;
+
+    if res.rows_affected() == 0 {
+        let is_member: Option<i32> = sqlx::query_scalar(
+            "SELECT 1 FROM conversation_members WHERE conversation_id = $1 AND user_id = $2",
+        )
+        .bind(conv_id)
+        .bind(me)
+        .fetch_optional(&state.db)
+        .await
+        .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "db err"))?;
+
+        if is_member.is_none() {
+            return Err((StatusCode::FORBIDDEN, "not a member"));
+        }
+    }
+    Ok(StatusCode::NO_CONTENT)
 }

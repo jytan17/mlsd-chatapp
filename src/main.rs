@@ -84,6 +84,7 @@ async fn main() {
             "/conversations/{id}/messages",
             post(messages::send_message).get(messages::list_messages),
         )
+        .route("/conversations/{id}/read", post(messages::mark_read))
         .route("/ws", get(ws::ws_handler))
         .with_state(state);
 
