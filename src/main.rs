@@ -28,7 +28,7 @@ struct AppState {
     pub db: PgPool,
     pub redis: ConnectionManager,
     pub hub: Hub,
-    pub pubsub_sink: redis::aio::PubSubSink,
+    pub pubsub_sink: fanout::SharedSink,
     pub subs: fanout::Subs,
 }
 
@@ -59,6 +59,7 @@ async fn main() {
         .await
         .expect("pubsub connect");
     let (pubsub_sink, pubsub_stream) = pubsub.split();
+    let pubsub_sink = Arc::new(tokio::sync::Mutex::new(pubsub_sink));
 
     let state = AppState {
         db,
@@ -68,7 +69,13 @@ async fn main() {
         subs: Arc::new(Mutex::new(HashMap::new())),
     };
 
-    tokio::spawn(fanout::run_subscriber(pubsub_stream, state.hub.clone()));
+    tokio::spawn(fanout::run_subscriber(
+        redis_client.clone(),
+        state.pubsub_sink.clone(),
+        state.subs.clone(),
+        state.hub.clone(),
+        pubsub_stream,
+    ));
     let app = Router::new()
         .route("/", get(index))
         .route("/health", get(health))

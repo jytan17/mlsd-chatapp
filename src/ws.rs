@@ -42,9 +42,9 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
             .await
             .unwrap_or_default();
 
-    let mut psink = state.pubsub_sink.clone();
+    let psink = state.pubsub_sink.clone();
     for c in &conv_ids {
-        crate::fanout::add_sub(&mut psink, &state.subs, *c).await;
+        crate::fanout::add_sub(&psink, &state.subs, *c).await;
     }
 
     let mut send_task = tokio::spawn(async move {
@@ -97,7 +97,7 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
     }
 
     for c in &conv_ids {
-        crate::fanout::remove_sub(&mut psink, &state.subs, *c).await;
+        crate::fanout::remove_sub(&psink, &state.subs, *c).await;
     }
 
     let mut guard = state.hub.lock().unwrap();
