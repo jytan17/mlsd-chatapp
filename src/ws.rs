@@ -96,7 +96,14 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
         _ = recv_task => send_task.abort(),
     }
 
-    for c in &conv_ids {
+    let current: Vec<Uuid> =
+        sqlx::query_scalar("SELECT conversation_id FROM conversation_members WHERE user_id = $1")
+            .bind(user_id)
+            .fetch_all(&state.db)
+            .await
+            .unwrap_or_default();
+
+    for c in &current {
         crate::fanout::remove_sub(&psink, &state.subs, *c).await;
     }
 

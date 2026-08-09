@@ -1,5 +1,5 @@
-use axum::{Json, extract::State, http::StatusCode};
 use crate::contract::{ConvResp, CreateConvReq};
+use axum::{Json, extract::State, http::StatusCode};
 use uuid::Uuid;
 
 use crate::{AppState, auth::AuthUser};
@@ -102,6 +102,18 @@ async fn create_dm(
     tx.commit()
         .await
         .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "tx commit".into()))?;
+
+    let cc = crate::fanout::ConvCreate {
+        conv_id,
+        members: vec![me, peer],
+    };
+    let raw = serde_json::to_string(&cc).unwrap();
+    let mut conn = state.redis.clone();
+    let _ = redis::cmd("PUBLISH")
+        .arg("control")
+        .arg(&raw)
+        .exec_async(&mut conn)
+        .await;
 
     Ok((
         StatusCode::CREATED,
