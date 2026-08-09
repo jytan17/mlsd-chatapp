@@ -80,12 +80,20 @@ pub async fn create_message(
     let broadcast = Broadcast { members, payload };
     let raw = serde_json::to_string(&broadcast).unwrap();
     let mut conn = redis.clone();
-    let _: () = redis::cmd("PUBLISH")
-        .arg(channel(conv_id))
-        .arg(raw)
-        .exec_async(&mut conn)
-        .await
-        .unwrap_or(());
+    for attempt in 0..3 {
+        match redis::cmd("PUBLISH")
+            .arg(channel(conv_id))
+            .arg(&raw)
+            .exec_async(&mut conn)
+            .await
+        {
+            Ok(()) => break,
+            Err(e) => {
+                eprintln!("publish attempt {attempt} failed: {e}");
+                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+            }
+        }
+    }
     Ok(msg)
 }
 
