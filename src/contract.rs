@@ -33,6 +33,11 @@ pub enum ServerEvent {
         conversation_id: Uuid,
         user_id: Uuid,
     },
+    Read {
+        conversation_id: Uuid,
+        user_id: Uuid,
+        last_read_message_id: Uuid,
+    },
 }
 
 /// Client → server.

@@ -215,6 +215,35 @@ pub async fn mark_read(
         if is_member.is_none() {
             return Err((StatusCode::FORBIDDEN, "not a member"));
         }
+        return Ok(StatusCode::NO_CONTENT);
+    }
+
+    let members: Vec<Uuid> =
+        sqlx::query_scalar("SELECT user_id FROM conversation_members WHERE conversation_id = $1")
+            .bind(conv_id)
+            .fetch_all(&state.db)
+            .await
+            .unwrap_or_default();
+
+    let targets: Vec<Uuid> = members.into_iter().filter(|m| *m != me).collect();
+    if !targets.is_empty() {
+        let event = ServerEvent::Read {
+            conversation_id: conv_id,
+            user_id: me,
+            last_read_message_id: req.message_id,
+        };
+        let payload = serde_json::to_string(&event).unwrap();
+        let bc = Broadcast {
+            members: targets,
+            payload,
+        };
+        let raw = serde_json::to_string(&bc).unwrap();
+        let mut conn = state.redis.clone();
+        let _ = redis::cmd("PUBLISH")
+            .arg(channel(conv_id))
+            .arg(&raw)
+            .exec_async(&mut conn)
+            .await;
     }
     Ok(StatusCode::NO_CONTENT)
 }

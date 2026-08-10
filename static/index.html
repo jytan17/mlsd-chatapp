@@ -91,6 +91,8 @@ function connectWs() {
       logline('MSG [' + m.sender_id.slice(0,8) + '] ' + m.body);
     } else if (ev.type === 'typing') {
       showTyping(ev.data.user_id);
+    } else if (ev.type === 'read') {
+      logline('✓✓ ' + ev.data.user_id.slice(0,8) + ' read up to ' + ev.data.last_read_message_id.slice(0,8));
     } else {
       logline(e.data);
     }
