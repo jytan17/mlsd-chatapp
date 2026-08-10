@@ -218,3 +218,41 @@ pub async fn mark_read(
     }
     Ok(StatusCode::NO_CONTENT)
 }
+
+pub async fn broadcast_typing(
+    db: &PgPool,
+    redis: &mut ConnectionManager,
+    sender_id: Uuid,
+    conv_id: Uuid,
+) {
+    let members: Vec<Uuid> =
+        sqlx::query_scalar("SELECT user_id FROM conversation_members WHERE conversation_id = $1")
+            .bind(conv_id)
+            .fetch_all(db)
+            .await
+            .unwrap_or_default();
+
+    if !members.contains(&sender_id) {
+        return;
+    }
+    let targets: Vec<Uuid> = members.into_iter().filter(|m| *m != sender_id).collect();
+    if targets.is_empty() {
+        return;
+    }
+
+    let event = ServerEvent::Typing {
+        conversation_id: conv_id,
+        user_id: sender_id,
+    };
+    let payload = serde_json::to_string(&event).unwrap();
+    let bc = Broadcast {
+        members: targets,
+        payload,
+    };
+    let raw = serde_json::to_string(&bc).unwrap();
+    let _ = redis::cmd("PUBLISH")
+        .arg(channel(conv_id))
+        .arg(&raw)
+        .exec_async(redis)
+        .await;
+}

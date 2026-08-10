@@ -16,6 +16,7 @@ mod conversations;
 mod fanout;
 mod login;
 mod messages;
+mod presence;
 mod signup;
 mod ws;
 
@@ -93,6 +94,7 @@ async fn main() {
         )
         .route("/conversations/{id}/read", post(messages::mark_read))
         .route("/ws", get(ws::ws_handler))
+        .route("/presence/{user_id}", get(presence::get_presenced))
         .with_state(state);
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".into());

@@ -35,6 +35,21 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
         .or_default()
         .push(tx.clone());
 
+    let mut hb_redis = state.redis.clone();
+    let hb_task = tokio::spawn(async move {
+        let key = format!("presence:user:{user_id}");
+        loop {
+            let _ = redis::cmd("SET")
+                .arg(&key)
+                .arg("1")
+                .arg("EX")
+                .arg(20)
+                .exec_async(&mut hb_redis)
+                .await;
+            tokio::time::sleep(std::time::Duration::from_secs(10)).await;
+        }
+    });
+
     let conv_ids: Vec<Uuid> =
         sqlx::query_scalar("SELECT conversation_id FROM conversation_members WHERE user_id = $1")
             .bind(user_id)
@@ -84,6 +99,15 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
                             let _ = ping_tx.send(err);
                         }
                     }
+                    Ok(ClientEvent::Typing { conversation_id }) => {
+                        crate::messages::broadcast_typing(
+                            &db,
+                            &mut msg_redis,
+                            user_id,
+                            conversation_id,
+                        )
+                        .await;
+                    }
                     Err(_) => {}
                 },
                 _ => {}
@@ -95,6 +119,7 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
         _ = &mut send_task => {},
         _ = recv_task => send_task.abort(),
     }
+    hb_task.abort();
 
     let current: Vec<Uuid> =
         sqlx::query_scalar("SELECT conversation_id FROM conversation_members WHERE user_id = $1")

@@ -49,6 +49,7 @@
   <h3>send (over WS)</h3>
   <input id="body" placeholder="message">
   <button onclick="send()">send</button>
+  <div id="typing" style="height:1.2em; color:#9aa4b2; font-style:italic;"></div>
 
   <h3>live log</h3>
   <pre id="log"></pre>
@@ -88,6 +89,8 @@ function connectWs() {
       const m = ev.data;
       setSeen(m.id);
       logline('MSG [' + m.sender_id.slice(0,8) + '] ' + m.body);
+    } else if (ev.type === 'typing') {
+      showTyping(ev.data.user_id);
     } else {
       logline(e.data);
     }
@@ -128,5 +131,23 @@ function send() {
   if (!ws || ws.readyState !== 1) { logline('ws not open'); return; }
   ws.send(JSON.stringify({type:'send_message', data:{conversation_id: conv.value, body: body.value}}));
   body.value = '';
+}
+
+// ---- typing: sender side (throttled) ----
+let lastTypingSent = 0;
+body.addEventListener('input', () => {
+  if (!ws || ws.readyState !== 1) return;
+  const now = Date.now();
+  if (now - lastTypingSent < 3000) return;   // throttle: 1 frame / 3s while typing
+  lastTypingSent = now;
+  ws.send(JSON.stringify({type:'typing', data:{conversation_id: conv.value}}));
+});
+
+// ---- typing: receiver side (auto-clear) ----
+let typingTimer = null;
+function showTyping(userId) {
+  typing.textContent = userId.slice(0,8) + ' is typing…';
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(() => { typing.textContent = ''; }, 5000);  // server sends no "stop"
 }
 </script>

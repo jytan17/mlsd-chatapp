@@ -29,6 +29,10 @@ pub enum ServerEvent {
     NewMessage(Message),
     Pong,
     Error(String),
+    Typing {
+        conversation_id: Uuid,
+        user_id: Uuid,
+    },
 }
 
 /// Client → server.
@@ -37,6 +41,7 @@ pub enum ServerEvent {
 pub enum ClientEvent {
     Ping,
     SendMessage { conversation_id: Uuid, body: String },
+    Typing { conversation_id: Uuid },
 }
 
 // ===== auth API =====
@@ -110,4 +115,10 @@ pub struct ListMsgQuery {
 pub struct ListMsgResp {
     pub messages: Vec<Message>,
     pub next_cursor: Option<Uuid>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct PresenceResp {
+    pub user_id: Uuid,
+    pub online: bool,
 }
