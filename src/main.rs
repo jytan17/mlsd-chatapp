@@ -5,7 +5,7 @@ use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
-use tokio::sync::mpsc::UnboundedSender;
+use tokio::sync::mpsc::Sender;
 use uuid::Uuid;
 
 use crate::auth::AuthUser;
@@ -22,7 +22,7 @@ mod ws;
 
 use crate::contract::MeResp;
 
-pub type Hub = Arc<Mutex<HashMap<Uuid, Vec<UnboundedSender<String>>>>>;
+pub type Hub = Arc<Mutex<HashMap<Uuid, Vec<Sender<String>>>>>;
 
 #[derive(Clone)]
 struct AppState {

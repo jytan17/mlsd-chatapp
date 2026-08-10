@@ -25,7 +25,7 @@ pub async fn ws_handler(
 
 async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
     let (mut sink, mut stream) = socket.split();
-    let (tx, mut rx) = mpsc::unbounded_channel::<String>();
+    let (tx, mut rx) = mpsc::channel::<String>(32);
 
     state
         .hub

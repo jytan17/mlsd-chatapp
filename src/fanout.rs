@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
+use tokio::sync::mpsc;
 use uuid::Uuid;
 
 pub type Subs = Arc<Mutex<HashMap<Uuid, usize>>>;
@@ -63,7 +64,13 @@ pub fn local_fanout(hub: &Hub, members: &[Uuid], payload: &str) {
     for m in members {
         if let Some(senders) = hub.get(m) {
             for s in senders {
-                let _ = s.send(payload.to_string());
+                match s.try_send(payload.to_string()) {
+                    Ok(()) => {}
+                    Err(mpsc::error::TrySendError::Full(_)) => {
+                        eprintln!("slow consumer, shetting msg for {m}")
+                    }
+                    Err(mpsc::error::TrySendError::Closed(_)) => {}
+                }
             }
         }
     }
