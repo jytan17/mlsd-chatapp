@@ -36,6 +36,27 @@ pub async fn create_message(
         return Err((StatusCode::BAD_REQUEST, "body too long"));
     }
 
+    // rate limit user level
+    let rl_key = format!("rate:msg:{sender_id}");
+    let n: i64 = redis::cmd("INCR")
+        .arg(&rl_key)
+        .query_async(&mut *redis)
+        .await
+        .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "redis err"))?;
+
+    if n == 1 {
+        let _: () = redis::cmd("EXPIRE")
+            .arg(&rl_key)
+            .arg(10)
+            .query_async(&mut *redis)
+            .await
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "redis err"))?;
+    }
+
+    if n > 30 {
+        return Err((StatusCode::TOO_MANY_REQUESTS, "rate limited"));
+    }
+
     let is_member: Option<i32> = sqlx::query_scalar(
         "SELECT 1 FROM conversation_members WHERE conversation_id = $1 AND user_id = $2",
     )
