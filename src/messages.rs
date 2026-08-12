@@ -18,7 +18,7 @@ pub async fn send_message(
     Json(req): Json<SendMsgReq>,
 ) -> Result<(StatusCode, Json<Message>), (StatusCode, &'static str)> {
     let mut redis = state.redis.clone();
-    let msg = create_message(&state.db, &mut redis, me, conv_id, req.body).await?;
+    let msg = create_message(&state.db, &mut redis, me, conv_id, req.body, req.media_id).await?;
     Ok((StatusCode::CREATED, Json(msg)))
 }
 
@@ -28,6 +28,7 @@ pub async fn create_message(
     sender_id: Uuid,
     conv_id: Uuid,
     body: String,
+    media_id: Option<Uuid>,
 ) -> Result<Message, (StatusCode, &'static str)> {
     if body.is_empty() {
         return Err((StatusCode::BAD_REQUEST, "empty body"));
@@ -70,14 +71,27 @@ pub async fn create_message(
         return Err((StatusCode::FORBIDDEN, "not a member"));
     }
 
+    if let Some(mid) = media_id {
+        let owner: Option<Uuid> = sqlx::query_scalar("SELECT uploader_id FROM media WHERE id = $1")
+            .bind(mid)
+            .fetch_optional(db)
+            .await
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "db err"))?;
+
+        if owner != Some(sender_id) {
+            return Err((StatusCode::FORBIDDEN, "not your media"));
+        }
+    }
+
     let msg_id = Uuid::now_v7();
     sqlx::query(
-        "INSERT INTO messages (id, conversation_id, sender_id, body) VALUES ($1, $2, $3, $4)",
+        "INSERT INTO messages (id, conversation_id, sender_id, body, media_id) VALUES ($1, $2, $3, $4, $5)",
     )
     .bind(msg_id)
     .bind(conv_id)
     .bind(sender_id)
     .bind(&body)
+    .bind(media_id)
     .execute(db)
     .await
     .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "insert err"))?;
@@ -94,6 +108,7 @@ pub async fn create_message(
         conversation_id: conv_id,
         sender_id: sender_id,
         body: body,
+        media_id: media_id,
     };
 
     let event = ServerEvent::NewMessage(msg.clone());
@@ -139,10 +154,10 @@ pub async fn list_messages(
         return Err((StatusCode::FORBIDDEN, "not a member"));
     }
 
-    let rows: Vec<(Uuid, Uuid, Uuid, String)> = match (q.after, q.before) {
+    let rows: Vec<(Uuid, Uuid, Uuid, String, Option<Uuid>)> = match (q.after, q.before) {
         (Some(after), _) => sqlx::query_as(
             "SELECT
-                id, conversation_id, sender_id, body
+                id, conversation_id, sender_id, body, media_id
             FROM messages
             WHERE conversation_id = $1 AND id > $2
             ORDER BY id ASC
@@ -155,7 +170,7 @@ pub async fn list_messages(
 
         (_, Some(before)) => sqlx::query_as(
             "SELECT
-                id, conversation_id, sender_id, body
+                id, conversation_id, sender_id, body, media_id
             FROM messages
             WHERE conversation_id = $1 AND id < $2
             ORDER BY id DESC
@@ -168,7 +183,7 @@ pub async fn list_messages(
         (None, None) => sqlx::query_as(
             "
             SELECT
-                id, conversation_id, sender_id, body
+                id, conversation_id, sender_id, body, media_id
             FROM messages
             WHERE conversation_id = $1
             ORDER BY id DESC
@@ -190,11 +205,12 @@ pub async fn list_messages(
 
     let messages = rows
         .into_iter()
-        .map(|(id, conversation_id, sender_id, body)| Message {
+        .map(|(id, conversation_id, sender_id, body, media_id)| Message {
             id,
             conversation_id,
             sender_id,
             body,
+            media_id,
         })
         .collect();
 

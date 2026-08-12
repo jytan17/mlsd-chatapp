@@ -99,6 +99,7 @@ async fn main() {
         .route("/ws", get(ws::ws_handler))
         .route("/presence/{user_id}", get(presence::get_presenced))
         .route("/media/upload-url", post(media::presign_upload))
+        .route("/media/{media_id}/url", get(media::presign_download))
         .with_state(state);
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".into());

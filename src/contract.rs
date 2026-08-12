@@ -18,6 +18,7 @@ pub struct Message {
     pub conversation_id: Uuid,
     pub sender_id: Uuid,
     pub body: String,
+    pub media_id: Option<Uuid>,
 }
 
 // ===== websocket protocol =====
@@ -45,8 +46,14 @@ pub enum ServerEvent {
 #[serde(tag = "type", content = "data", rename_all = "snake_case")]
 pub enum ClientEvent {
     Ping,
-    SendMessage { conversation_id: Uuid, body: String },
-    Typing { conversation_id: Uuid },
+    SendMessage {
+        conversation_id: Uuid,
+        body: String,
+        media_id: Option<Uuid>,
+    },
+    Typing {
+        conversation_id: Uuid,
+    },
 }
 
 // ===== auth API =====
@@ -102,6 +109,7 @@ pub struct ConvResp {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SendMsgReq {
     pub body: String,
+    pub media_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -137,4 +145,9 @@ pub struct UploadReq {
 pub struct UploadResp {
     pub media_id: Uuid,
     pub upload_url: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct MediaUrlResp {
+    pub url: String,
 }

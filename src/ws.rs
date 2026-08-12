@@ -84,6 +84,7 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
                     Ok(ClientEvent::SendMessage {
                         conversation_id,
                         body,
+                        media_id,
                     }) => {
                         if let Err((_, e)) = crate::messages::create_message(
                             &db,
@@ -91,6 +92,7 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
                             user_id,
                             conversation_id,
                             body,
+                            media_id,
                         )
                         .await
                         {
