@@ -15,6 +15,7 @@ mod contract;
 mod conversations;
 mod fanout;
 mod login;
+mod media;
 mod messages;
 mod presence;
 mod signup;
@@ -31,6 +32,7 @@ struct AppState {
     pub hub: Hub,
     pub pubsub_sink: fanout::SharedSink,
     pub subs: fanout::Subs,
+    pub s3: aws_sdk_s3::Client,
 }
 
 #[tokio::main]
@@ -61,13 +63,14 @@ async fn main() {
         .expect("pubsub connect");
     let (pubsub_sink, pubsub_stream) = pubsub.split();
     let pubsub_sink = Arc::new(tokio::sync::Mutex::new(pubsub_sink));
-
+    let s3 = media::make_s3().await;
     let state = AppState {
         db,
         redis,
         hub: Arc::new(Mutex::new(HashMap::new())),
         pubsub_sink,
         subs: Arc::new(Mutex::new(HashMap::new())),
+        s3: s3,
     };
 
     tokio::spawn(fanout::run_subscriber(
@@ -95,6 +98,7 @@ async fn main() {
         .route("/conversations/{id}/read", post(messages::mark_read))
         .route("/ws", get(ws::ws_handler))
         .route("/presence/{user_id}", get(presence::get_presenced))
+        .route("/media/upload-url", post(media::presign_upload))
         .with_state(state);
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".into());

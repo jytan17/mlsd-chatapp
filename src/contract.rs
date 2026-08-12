@@ -127,3 +127,14 @@ pub struct PresenceResp {
     pub user_id: Uuid,
     pub online: bool,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct UploadReq {
+    pub content_type: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct UploadResp {
+    pub media_id: Uuid,
+    pub upload_url: String,
+}
