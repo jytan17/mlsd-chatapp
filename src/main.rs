@@ -1,5 +1,8 @@
 use axum::routing::post;
 use axum::{Json, Router, extract::State, http::StatusCode, response::Html, routing::get};
+use axum_prometheus::metrics_exporter_prometheus::{Matcher, PrometheusBuilder};
+use axum_prometheus::utils::SECONDS_DURATION_BUCKETS;
+use axum_prometheus::{AXUM_HTTP_REQUESTS_DURATION_SECONDS, BaseMetricLayer};
 use redis::aio::ConnectionManager;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::collections::HashMap;
@@ -80,6 +83,18 @@ async fn main() {
         state.hub.clone(),
         pubsub_stream,
     ));
+    // install_recorder() = recorder only, NO http listener (pair()'s default
+    // handle spawns an exporter on :9000, which collides with MinIO). We expose
+    // metrics via our own /metrics route + BaseMetricLayer instead.
+    let metric_handle = PrometheusBuilder::new()
+        .set_buckets_for_metric(
+            Matcher::Full(AXUM_HTTP_REQUESTS_DURATION_SECONDS.to_string()),
+            SECONDS_DURATION_BUCKETS,
+        )
+        .unwrap()
+        .install_recorder()
+        .unwrap();
+    let prometheus_layer = BaseMetricLayer::new();
     let app = Router::new()
         .route("/", get(index))
         .route("/health", get(health))
@@ -100,7 +115,12 @@ async fn main() {
         .route("/presence/{user_id}", get(presence::get_presenced))
         .route("/media/upload-url", post(media::presign_upload))
         .route("/media/{media_id}/url", get(media::presign_download))
-        .with_state(state);
+        .route(
+            "/metrics",
+            get(move || async move { metric_handle.render() }),
+        )
+        .with_state(state)
+        .layer(prometheus_layer);
 
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".into());
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}"))

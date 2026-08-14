@@ -16,6 +16,7 @@ use uuid::Uuid;
 pub async fn make_s3() -> Client {
     let creds = Credentials::new("chat", "chatchat123", None, None, "static");
     let cfg = aws_sdk_s3::config::Builder::new()
+        .behavior_version(aws_sdk_s3::config::BehaviorVersion::latest())
         .region(Region::new("us-east-1"))
         .endpoint_url("http://localhost:9000")
         .credentials_provider(creds)
