@@ -14,11 +14,16 @@ use std::time::Duration;
 use uuid::Uuid;
 
 pub async fn make_s3() -> Client {
-    let creds = Credentials::new("chat", "chatchat123", None, None, "static");
+    let endpoint = std::env::var("S3_ENDPOINT").expect("S3_ENDPOINT not set");
+    let access = std::env::var("S3_ACCESS_KEY").expect("S3_ACCESS_KEY not set");
+    let secret = std::env::var("S3_SECRET_KEY").expect("S3_SECRET_KEY not set");
+    let region = std::env::var("S3_REGION").unwrap_or_else(|_| "us-east-1".into());
+
+    let creds = Credentials::new(access, secret, None, None, "static");
     let cfg = aws_sdk_s3::config::Builder::new()
         .behavior_version(aws_sdk_s3::config::BehaviorVersion::latest())
-        .region(Region::new("us-east-1"))
-        .endpoint_url("http://localhost:9000")
+        .region(Region::new(region))
+        .endpoint_url(endpoint)
         .credentials_provider(creds)
         .force_path_style(true)
         .build();
