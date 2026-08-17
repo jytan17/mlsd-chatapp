@@ -36,6 +36,7 @@ struct AppState {
     pub pubsub_sink: fanout::SharedSink,
     pub subs: fanout::Subs,
     pub s3: aws_sdk_s3::Client,
+    pub pod: String,
 }
 
 #[tokio::main]
@@ -49,6 +50,11 @@ async fn main() {
         .connect(&db_url)
         .await
         .expect("db connect");
+
+    sqlx::migrate!("./migrations")
+        .run(&db)
+        .await
+        .expect("migrations failed");
 
     let redis_client = redis::Client::open(redis_url).expect("redis client");
     let redis = ConnectionManager::new_with_config(
@@ -67,6 +73,11 @@ async fn main() {
     let (pubsub_sink, pubsub_stream) = pubsub.split();
     let pubsub_sink = Arc::new(tokio::sync::Mutex::new(pubsub_sink));
     let s3 = media::make_s3().await;
+    // POD_NAME injected via downward API in k8s; HOSTNAME is the pod name too;
+    // "local" when running outside a cluster.
+    let pod = std::env::var("POD_NAME")
+        .or_else(|_| std::env::var("HOSTNAME"))
+        .unwrap_or_else(|_| "local".into());
     let state = AppState {
         db,
         redis,
@@ -74,6 +85,7 @@ async fn main() {
         pubsub_sink,
         subs: Arc::new(Mutex::new(HashMap::new())),
         s3: s3,
+        pod,
     };
 
     tokio::spawn(fanout::run_subscriber(

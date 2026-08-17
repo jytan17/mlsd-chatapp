@@ -35,6 +35,14 @@ async fn handle_socket(socket: WebSocket, user_id: Uuid, state: AppState) {
         .or_default()
         .push(tx.clone());
 
+    // tell the client which pod hosts this socket (demo: watch tabs land on
+    // different pods; message still flows via Redis fanout between them)
+    let hello = serde_json::to_string(&ServerEvent::Hello {
+        pod: state.pod.clone(),
+    })
+    .unwrap();
+    let _ = tx.send(hello).await;
+
     let mut hb_redis = state.redis.clone();
     let hb_task = tokio::spawn(async move {
         let key = format!("presence:user:{user_id}");

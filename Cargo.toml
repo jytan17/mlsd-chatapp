@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 axum = { version = "0.8", features = ["ws"] }
 tokio = { version = "1", features = ["full", "sync"] }
-sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid"] }
+sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid", "migrate"] }
 dotenvy = "0.15"
 redis = { version = "0.27", features = ["tokio-comp", "connection-manager"] }
 argon2 = "0.5"

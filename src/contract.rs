@@ -30,6 +30,9 @@ pub enum ServerEvent {
     NewMessage(Message),
     Pong,
     Error(String),
+    Hello {
+        pod: String,
+    },
     Typing {
         conversation_id: Uuid,
         user_id: Uuid,

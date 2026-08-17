@@ -14,7 +14,10 @@ use std::time::Duration;
 use uuid::Uuid;
 
 pub async fn make_s3() -> Client {
-    let endpoint = std::env::var("S3_ENDPOINT").expect("S3_ENDPOINT not set");
+    // Presigning is OFFLINE — the server never connects here, it only signs a
+    // URL. So we sign against the BROWSER-reachable host (S3_PUBLIC_ENDPOINT),
+    // not the in-cluster minio Service DNS. The browser PUTs/GETs bytes direct.
+    let endpoint = std::env::var("S3_PUBLIC_ENDPOINT").expect("S3_PUBLIC_ENDPOINT not set");
     let access = std::env::var("S3_ACCESS_KEY").expect("S3_ACCESS_KEY not set");
     let secret = std::env::var("S3_SECRET_KEY").expect("S3_SECRET_KEY not set");
     let region = std::env::var("S3_REGION").unwrap_or_else(|_| "us-east-1".into());
